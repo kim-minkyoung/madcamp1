@@ -16,12 +16,12 @@ class ContactAdapter(
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(contact: Tab1Fragment.Contact) {
-            binding.titleTextView.text = contact.name
-            binding.subTitleTextView.text = contact.phoneNumber
+            binding.nameView.text = contact.name
+            binding.numberView.text = contact.phoneNumber
 
             Glide.with(context)
                 .load(contact.photoUri)
-                .into(binding.songImageView)
+                .into(binding.profileImageView)
         }
     }
 

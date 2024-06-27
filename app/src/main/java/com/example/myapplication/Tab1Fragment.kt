@@ -78,14 +78,30 @@ class Tab1Fragment : Fragment() {
                     c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
                 val phoneNumber =
                     c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val formattedPhoneNumber = formatPhoneNumber(phoneNumber)
                 val photoUri =
                     c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
 
-                contactList.add(Contact(name, phoneNumber, photoUri))
+                contactList.add(Contact(name, formattedPhoneNumber, photoUri))
             }
         }
 
         updateRecyclerView()
+    }
+
+    // 전화번호를 원하는 형식으로 변환하는 함수
+    private fun formatPhoneNumber(phoneNumber: String?): String {
+        // 전화번호가 null인 경우 빈 문자열을 반환
+        if (phoneNumber.isNullOrEmpty()) return ""
+
+        // 전화번호에서 숫자만 추출
+        val digits = phoneNumber.filter { it.isDigit() }
+
+        // 전화번호 길이 확인
+        if (digits.length < 10) return phoneNumber // 너무 짧은 경우 원래 형식 유지
+
+        // 형식화된 전화번호 생성
+        return "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
     }
 
     override fun onRequestPermissionsResult(
