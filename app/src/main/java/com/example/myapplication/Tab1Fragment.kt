@@ -1,4 +1,3 @@
-
 package com.example.myapplication
 
 import android.Manifest
@@ -6,39 +5,45 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.myapplication.databinding.ActivytyTab1Binding
+import androidx.fragment.app.Fragment
+import com.example.myapplication.databinding.FragmentTab1Binding
 
-class Tab1Activity : AppCompatActivity() {
+class Tab1Fragment : Fragment() {
 
-    private lateinit var binding: ActivytyTab1Binding
+    private var _binding: FragmentTab1Binding? = null
+    private val binding get() = _binding!!
+
     private lateinit var adapter: ArrayAdapter<String>
 
     companion object {
         private const val REQUEST_READ_CONTACTS = 101
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivytyTab1Binding.inflate(layoutInflater) // ViewBinding 초기화
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentTab1Binding.inflate(inflater, container, false)
         val view = binding.root
-        setContentView(view)
 
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1)
+        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1)
         binding.contactListView.adapter = adapter
 
         // READ_CONTACTS 권한 확인
         if (ContextCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 Manifest.permission.READ_CONTACTS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // 권한이 없는 경우 권한 요청
             ActivityCompat.requestPermissions(
-                this,
+                requireActivity(),
                 arrayOf(Manifest.permission.READ_CONTACTS),
                 REQUEST_READ_CONTACTS
             )
@@ -46,11 +51,13 @@ class Tab1Activity : AppCompatActivity() {
             // 권한이 있는 경우 연락처 데이터 읽어오기
             readContacts()
         }
+
+        return view
     }
 
     @SuppressLint("Range")
     private fun readContacts() {
-        val cursor = contentResolver.query(
+        val cursor = requireContext().contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
             null,
             null,
@@ -62,7 +69,6 @@ class Tab1Activity : AppCompatActivity() {
             while (c.moveToNext()) {
                 val name =
                     c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-//                val number = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                 adapter.add(name)
             }
         }
@@ -83,4 +89,8 @@ class Tab1Activity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
