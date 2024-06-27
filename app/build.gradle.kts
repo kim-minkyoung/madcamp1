@@ -37,6 +37,12 @@ android {
         enable = true
     }
 }
+//tab 2번째에서 갤러리 추가
+dependencies {
+    implementation ("com.google.android.material:material:1.4.0'")
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.squareup.picasso:picasso:2.71828") // 이미지 로딩을 위한 라이브러리
+}
 
 dependencies {
     implementation ("com.google.android.material:material:1.9.0")

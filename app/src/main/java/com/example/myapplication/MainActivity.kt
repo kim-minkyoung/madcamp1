@@ -15,10 +15,6 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 1"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 2"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 3"))
-
         binding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
