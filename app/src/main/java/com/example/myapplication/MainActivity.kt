@@ -1,12 +1,14 @@
 package com.example.myapplication
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myapplication.databinding.ActivityMainBinding
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,30 +17,32 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                when (tab.position) {
-                    0 -> {
-                        // TODO
-                        startActivity(Intent(this@MainActivity, Tab1Activity::class.java))
-                    }
-                    1 -> {
-                        // TODO
-                    }
-                    2 -> {
-                        // TODO
-                    }
-                }
-            }
+        // ViewPager2 초기화 및 설정
+        binding.viewPager.adapter = TabPagerAdapter(this)
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Implement if needed
-                startActivity(Intent(this@MainActivity, Tab1Activity::class.java))
+        // TabLayout과 ViewPager2 연결
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = "Tab 1"
+                1 -> tab.text = "Tab 2"
+                2 -> tab.text = "Tab 3"
             }
+        }.attach()
+    }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Implement if needed
+    private inner class TabPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+
+        override fun getItemCount(): Int {
+            return 3 // 탭의 수, 예시로 3개로 설정
+        }
+
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> Tab1Fragment()
+                1 -> Tab1Fragment()
+                2 -> Tab1Fragment()
+                else -> throw IllegalArgumentException("Invalid position: $position")
             }
-        })
+        }
     }
 }
