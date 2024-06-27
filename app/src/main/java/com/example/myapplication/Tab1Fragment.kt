@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -19,7 +20,13 @@ class Tab1Fragment : Fragment() {
     private var _binding: FragmentTab1Binding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: ArrayAdapter<String>
+    data class Contact(
+        val name: String,
+        val phoneNumber: String?,
+        val photoUri: String?
+    )
+
+    private lateinit var adapter: ArrayAdapter<Contact>
 
     companion object {
         private const val REQUEST_READ_CONTACTS = 101
@@ -35,7 +42,7 @@ class Tab1Fragment : Fragment() {
         adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1)
         binding.contactListView.adapter = adapter
 
-        // READ_CONTACTS 권한 확인
+        // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_CONTACTS
@@ -57,8 +64,9 @@ class Tab1Fragment : Fragment() {
 
     @SuppressLint("Range")
     private fun readContacts() {
+        val contacts = mutableListOf<Contact>()
         val cursor = requireContext().contentResolver.query(
-            ContactsContract.Contacts.CONTENT_URI,
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
             null,
             null,
@@ -68,10 +76,17 @@ class Tab1Fragment : Fragment() {
         cursor?.use { c ->
             while (c.moveToNext()) {
                 val name =
-                    c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                adapter.add(name)
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val phoneNumber =
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val photoUri =
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+
+                contacts.add(Contact(name, phoneNumber, photoUri))
             }
         }
+
+        adapter.addAll(contacts)
     }
 
     override fun onRequestPermissionsResult(
