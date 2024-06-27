@@ -13,10 +13,14 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentTab1Binding
 
 class Tab1Fragment : Fragment() {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var contactAdapter: ContactAdapter
     private var _binding: FragmentTab1Binding? = null
     private val binding get() = _binding!!
 
@@ -25,8 +29,7 @@ class Tab1Fragment : Fragment() {
         val phoneNumber: String?,
         val photoUri: String?
     )
-
-    private lateinit var adapter: ArrayAdapter<Contact>
+    val contactList = mutableListOf<Contact>()
 
     companion object {
         private const val REQUEST_READ_CONTACTS = 101
@@ -38,9 +41,6 @@ class Tab1Fragment : Fragment() {
     ): View? {
         _binding = FragmentTab1Binding.inflate(inflater, container, false)
         val view = binding.root
-
-        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1)
-        binding.contactListView.adapter = adapter
 
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
@@ -64,7 +64,6 @@ class Tab1Fragment : Fragment() {
 
     @SuppressLint("Range")
     private fun readContacts() {
-        val contacts = mutableListOf<Contact>()
         val cursor = requireContext().contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
@@ -82,11 +81,11 @@ class Tab1Fragment : Fragment() {
                 val photoUri =
                     c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
 
-                contacts.add(Contact(name, phoneNumber, photoUri))
+                contactList.add(Contact(name, phoneNumber, photoUri))
             }
         }
 
-        adapter.addAll(contacts)
+        updateRecyclerView()
     }
 
     override fun onRequestPermissionsResult(
@@ -102,6 +101,16 @@ class Tab1Fragment : Fragment() {
                 }
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+    }
+
+    private fun updateRecyclerView() {
+        recyclerView = binding.contactRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext()) // Use requireContext() here
+        contactAdapter = ContactAdapter(requireContext(), contactList) // Use requireContext() here
+        recyclerView.adapter = contactAdapter
     }
 
     override fun onDestroyView() {
