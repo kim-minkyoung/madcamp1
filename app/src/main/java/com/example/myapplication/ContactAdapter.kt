@@ -21,6 +21,8 @@ class ContactAdapter(
 
             Glide.with(context)
                 .load(contact.photoUri)
+                .placeholder(R.drawable.default_profile_img) // 로딩 중 표시할 이미지
+                .error(R.drawable.default_profile_img)       // 오류 시 표시할 이미지
                 .into(binding.profileImageView)
         }
     }
