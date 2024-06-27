@@ -9,17 +9,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentTab1Binding
 
 class Tab1Fragment : Fragment() {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var contactAdapter: ContactAdapter
     private var _binding: FragmentTab1Binding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: ArrayAdapter<String>
+    data class Contact(
+        val name: String,
+        val phoneNumber: String?,
+        val photoUri: String?
+    )
+    val contactList = mutableListOf<Contact>()
 
     companion object {
         private const val REQUEST_READ_CONTACTS = 101
@@ -32,10 +42,7 @@ class Tab1Fragment : Fragment() {
         _binding = FragmentTab1Binding.inflate(inflater, container, false)
         val view = binding.root
 
-        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1)
-        binding.contactListView.adapter = adapter
-
-        // READ_CONTACTS 권한 확인
+        // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_CONTACTS
@@ -58,7 +65,7 @@ class Tab1Fragment : Fragment() {
     @SuppressLint("Range")
     private fun readContacts() {
         val cursor = requireContext().contentResolver.query(
-            ContactsContract.Contacts.CONTENT_URI,
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
             null,
             null,
@@ -68,10 +75,33 @@ class Tab1Fragment : Fragment() {
         cursor?.use { c ->
             while (c.moveToNext()) {
                 val name =
-                    c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                adapter.add(name)
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val phoneNumber =
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val formattedPhoneNumber = formatPhoneNumber(phoneNumber)
+                val photoUri =
+                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+
+                contactList.add(Contact(name, formattedPhoneNumber, photoUri))
             }
         }
+
+        updateRecyclerView()
+    }
+
+    // 전화번호를 원하는 형식으로 변환하는 함수
+    private fun formatPhoneNumber(phoneNumber: String?): String {
+        // 전화번호가 null인 경우 빈 문자열을 반환
+        if (phoneNumber.isNullOrEmpty()) return ""
+
+        // 전화번호에서 숫자만 추출
+        val digits = phoneNumber.filter { it.isDigit() }
+
+        // 전화번호 길이 확인
+        if (digits.length < 10) return phoneNumber // 너무 짧은 경우 원래 형식 유지
+
+        // 형식화된 전화번호 생성
+        return "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
     }
 
     override fun onRequestPermissionsResult(
@@ -87,6 +117,16 @@ class Tab1Fragment : Fragment() {
                 }
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+    }
+
+    private fun updateRecyclerView() {
+        recyclerView = binding.contactRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext()) // Use requireContext() here
+        contactAdapter = ContactAdapter(requireContext(), contactList) // Use requireContext() here
+        recyclerView.adapter = contactAdapter
     }
 
     override fun onDestroyView() {
