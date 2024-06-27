@@ -1,22 +1,30 @@
 package com.example.myapplication
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import androidx.fragment.app.Fragment
+import com.example.myapplication.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        val tabLayout: TabLayout = findViewById(R.id.tab_layout)
-        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 1"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 2"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Tab 3"))
+
+        binding.tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
                     0 -> {
                         // TODO
+                        startActivity(Intent(this@MainActivity, Tab1Activity::class.java))
                     }
                     1 -> {
                         // TODO
@@ -29,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 // Implement if needed
+                startActivity(Intent(this@MainActivity, Tab1Activity::class.java))
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -37,36 +46,3 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
-
-
-
-
-
-
-
-
-
-
-/*
-package com.example.myapplication
-
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
-*//*
-
-}*/
