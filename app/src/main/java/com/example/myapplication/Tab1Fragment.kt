@@ -2,9 +2,11 @@ package com.example.myapplication
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +15,13 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentTab1Binding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Tab1Fragment : Fragment() {
 
@@ -27,7 +33,8 @@ class Tab1Fragment : Fragment() {
     data class Contact(
         val name: String,
         val phoneNumber: String?,
-        val photoUri: String?
+        val photoUri: String?,
+        val isFavorite: Boolean?
     )
     val contactList = mutableListOf<Contact>()
 
@@ -64,29 +71,90 @@ class Tab1Fragment : Fragment() {
 
     @SuppressLint("Range")
     private fun readContacts() {
-        val cursor = requireContext().contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
-        )
+        val contactsUri = ContactsContract.Contacts.CONTENT_URI
+        // 코루틴을 사용하여 백그라운드에서 데이터 쿼리
+        lifecycleScope.launch(Dispatchers.IO) {
+            val projection = arrayOf(
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
+                ContactsContract.CommonDataKinds.Phone.STARRED
+            )
 
-        cursor?.use { c ->
-            while (c.moveToNext()) {
-                val name =
-                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-                val phoneNumber =
-                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-                val formattedPhoneNumber = formatPhoneNumber(phoneNumber)
-                val photoUri =
-                    c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))
+            try {
+                val cursor = requireContext().contentResolver.query(
+                    contactsUri,
+                    projection,
+                    null,
+                    null,
+                    null
+                )
 
-                contactList.add(Contact(name, formattedPhoneNumber, photoUri))
+                cursor?.use { c ->
+                    val idIndex = c.getColumnIndex(ContactsContract.Contacts._ID)
+                    val nameIndex = c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+                    val starredIndex = c.getColumnIndex(ContactsContract.Contacts.STARRED)
+
+                    while (c.moveToNext()) {
+                        val contactId = if (idIndex != -1) c.getString(idIndex) else null
+                        val name = if (nameIndex != -1) c.getString(nameIndex) ?: "Unknown" else "Unknown"
+                        val isFavorite = if (starredIndex != -1) c.getInt(starredIndex) == 1 else false
+
+                        val phoneNumber: String? = contactId?.let { id ->
+                            val phoneCursor = requireContext().contentResolver.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+                                "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} = ?",
+                                arrayOf(id),
+                                null
+                            )
+
+                            phoneCursor?.use { pc ->
+                                if (pc.moveToNext()) {
+                                    val numberIndex = pc.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                                    if (numberIndex != -1) pc.getString(numberIndex) else null
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+
+                        val formattedPhoneNumber = phoneNumber?.let { formatPhoneNumber(it) } ?: "000-0000-0000"
+
+                        val photoUri: String? = contactId?.let { id ->
+                            val photoCursor = requireContext().contentResolver.query(
+                                ContactsContract.Data.CONTENT_URI,
+                                arrayOf(ContactsContract.CommonDataKinds.Photo.PHOTO_URI),
+                                "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?",
+                                arrayOf(id, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE),
+                                null
+                            )
+
+                            photoCursor?.use { pc ->
+                                if (pc.moveToNext()) {
+                                    val photoIndex = pc.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO_URI)
+                                    if (photoIndex != -1) pc.getString(photoIndex) else null
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+
+                        // 백그라운드에서 처리 중인 경우에만 contactList에 추가
+                        contactList.add(Contact(name, formattedPhoneNumber, photoUri, isFavorite))
+                    }
+                }
+
+                // 데이터 처리 후 메인 스레드에서 RecyclerView 업데이트
+                withContext(Dispatchers.Main) {
+                    updateRecyclerView()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error querying contacts", e)
             }
         }
 
-        updateRecyclerView()
+
     }
 
     // 전화번호를 원하는 형식으로 변환하는 함수
@@ -98,7 +166,7 @@ class Tab1Fragment : Fragment() {
         val digits = phoneNumber.filter { it.isDigit() }
 
         // 전화번호 길이 확인
-        if (digits.length < 10) return phoneNumber // 너무 짧은 경우 원래 형식 유지
+        if (digits.length != 12) return phoneNumber // 너무 짧은 경우 원래 형식 유지
 
         // 형식화된 전화번호 생성
         return "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
