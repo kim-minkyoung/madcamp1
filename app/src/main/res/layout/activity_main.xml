@@ -12,9 +12,19 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/teal"
+        app:tabTextColor="@color/white"
+        app:tabSelectedTextColor="@color/white"
+        app:tabIndicatorColor="@color/babyPink"
+        app:tabIndicatorHeight="4dp"
+        app:tabRippleColor="@color/babyPink"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
