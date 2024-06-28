@@ -46,3 +46,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+class Tab2Fragment : Fragment() {
+
+}
