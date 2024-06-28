@@ -37,6 +37,7 @@ android {
         enable = true
     }
 }
+
 //tab 2번째에서 갤러리 추가
 dependencies {
     implementation ("com.google.android.material:material:1.4.0'")
@@ -59,4 +60,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+dependencies {
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation 'com.github.bumptech.glide:recyclerview-integration:4.12.0'
+    implementation 'com.github.bumptech.glide:annotations:4.12.0'
 }
