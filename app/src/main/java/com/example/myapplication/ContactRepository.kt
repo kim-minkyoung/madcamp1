@@ -85,6 +85,10 @@ object ContactRepository {
         return contacts.toList()
     }
 
+    fun getContactByIndex(index: Int): Contact? {
+        return if (index in contacts.indices) contacts[index] else null
+    }
+
     fun getAllContacts(): List<Contact> {
         return contacts.toList()
     }

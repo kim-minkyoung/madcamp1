@@ -42,23 +42,6 @@ class Tab1Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTab1Binding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        recyclerView = binding.contactRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Adapter 초기화 및 설정
-        contactAdapter = ContactAdapter(requireContext(), emptyList())  { contact ->
-            // 클릭 이벤트 처리
-            val intent = Intent(activity, ContactDetailActivity::class.java)
-            startActivity(intent)
-        }
-        recyclerView.adapter = contactAdapter
-
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -75,6 +58,7 @@ class Tab1Fragment : Fragment() {
             // 권한이 있는 경우 연락처 데이터 읽어오기
             readContacts()
         }
+        return binding.root
     }
 
     private fun readContacts() {
@@ -83,12 +67,25 @@ class Tab1Fragment : Fragment() {
             try {
                 val contacts = ContactRepository.loadAllContacts(requireContext())
                 withContext(Dispatchers.Main) {
-                    contactAdapter.updateContacts(contacts)
+                    updateRecyclerView(contacts)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun updateRecyclerView(contacts: List<com.example.myapplication.Contact>) {
+        recyclerView = binding.contactRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Adapter 초기화 및 설정
+        contactAdapter = ContactAdapter(requireContext(), contacts)  { contact ->
+            // 클릭 이벤트 처리
+            val intent = Intent(activity, ContactDetailActivity::class.java)
+            startActivity(intent)
+        }
+        recyclerView.adapter = contactAdapter
     }
 
     override fun onRequestPermissionsResult(
