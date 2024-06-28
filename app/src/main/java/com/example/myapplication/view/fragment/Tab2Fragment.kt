@@ -1,6 +1,3 @@
-package com.example.myapplication.view.fragment
-
-import com.example.myapplication.view.adapter.ImageAdapter
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -33,11 +30,13 @@ class Tab2Fragment : Fragment() {
         _binding = FragmentTab2Binding.inflate(inflater, container, false)
         val view = binding.root
 
+        // RecyclerView 설정
         recyclerView = binding.recyclerView
-        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 3) // 그리드 레이아웃을 사용하여 이미지가 3열로 정렬되도록 함
         imageAdapter = ImageAdapter(imageList)
         recyclerView.adapter = imageAdapter
 
+        // 갤러리에서 이미지를 선택하기 위한 런처 등록
         pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.let { data ->
@@ -55,16 +54,19 @@ class Tab2Fragment : Fragment() {
             }
         }
 
+        // 이미지 추가 버튼 클릭 리스너 설정
         binding.addImg.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             pickImageLauncher.launch(intent)
         }
 
+        // 선택 모드 활성화/비활성화 버튼 클릭 리스너 설정
         binding.selectButton.setOnClickListener {
             imageAdapter.isSelectMode = !imageAdapter.isSelectMode
             imageAdapter.notifyDataSetChanged()
         }
 
+        // 선택된 이미지 삭제 버튼 클릭 리스너 설정
         binding.deleteButton.setOnClickListener {
             if (imageAdapter.isSelectMode) {
                 imageAdapter.deleteSelectedImages()
