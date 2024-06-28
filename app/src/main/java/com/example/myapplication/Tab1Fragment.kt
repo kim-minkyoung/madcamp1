@@ -42,6 +42,7 @@ class Tab1Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTab1Binding.inflate(inflater, container, false)
+        binding.toolbar.visibility = View.GONE
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -59,6 +60,20 @@ class Tab1Fragment : Fragment() {
             readContacts()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.buttonAllView.setOnClickListener {
+            // 버튼을 클릭했을 때 실행될 로직
+            navigateToViewAllContact()
+        }
+    }
+
+    private fun navigateToViewAllContact() {
+        val intent = Intent(activity, ContactAllActivity::class.java)
+        startActivity(intent)
     }
 
     private fun readContacts() {

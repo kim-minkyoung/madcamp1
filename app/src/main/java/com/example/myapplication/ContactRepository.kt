@@ -8,9 +8,9 @@ object ContactRepository {
     val contacts = mutableListOf<Contact>()
     val contactsFavorite = mutableListOf<Contact>()
 
-    fun addContact(contact: Contact) {
-        contacts.add(contact)
-    }
+//    fun addContact(contact: Contact) {
+//        contacts.add(contact)
+//    }
 
     fun loadAllContacts(context: Context) {
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
@@ -72,7 +72,6 @@ object ContactRepository {
                     }
                 }
 
-                // 백그라운드에서 처리 중인 경우에만 contactList에 추가
                 contacts.add(
                     Contact(
                         name,

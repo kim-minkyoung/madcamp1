@@ -29,6 +29,7 @@ class ContactAdapter(
             itemView.setOnClickListener {
                 onItemClick.invoke(contact)
             }
+
         }
     }
 
