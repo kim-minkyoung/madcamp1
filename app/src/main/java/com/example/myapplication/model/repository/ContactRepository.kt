@@ -73,27 +73,21 @@ object ContactRepository {
                     }
                 }
 
-                contacts.add(
-                    Contact(
-                        name,
-                        formattedPhoneNumber,
-                        photoUri,
-                        isFavorite
-                    )
+                val contact = Contact(
+                    name,
+                    formattedPhoneNumber,
+                    photoUri,
+                    isFavorite
                 )
 
+                contacts.add(contact)
+
                 if (isFavorite) {
-                    contactsFavorite.add(
-                            Contact(
-                                name,
-                                formattedPhoneNumber,
-                                photoUri,
-                                isFavorite
-                            )
-                        )
+                    contactsFavorite.add(contact)
                 }
             }
         }
+
     }
 
     fun getContactByIndex(index: Int): Contact? {

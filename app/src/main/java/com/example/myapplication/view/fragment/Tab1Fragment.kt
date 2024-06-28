@@ -1,5 +1,6 @@
 package com.example.myapplication.view.fragment
 
+import ContactViewModel
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +30,7 @@ class Tab1Fragment : Fragment() {
     private lateinit var contactAdapter: ContactAdapter
     private var _binding: Fragment1RecyclerViewBinding? = null
     private val binding get() = _binding!!
+    private lateinit var contactViewModel: ContactViewModel
 
     data class Contact(
         val name: String,
@@ -48,6 +51,8 @@ class Tab1Fragment : Fragment() {
         _binding = Fragment1RecyclerViewBinding.inflate(inflater, container, false)
         binding.toolbar.visibility = View.GONE
 
+        // ViewModel 초기화
+        contactViewModel = ViewModelProvider(this).get(ContactViewModel::class.java)
 
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
@@ -63,7 +68,7 @@ class Tab1Fragment : Fragment() {
             )
         } else {
             // 권한이 있는 경우 연락처 데이터 읽어오기
-            readContacts()
+            observeFavoriteContacts()
         }
         return binding.root
     }
@@ -80,6 +85,13 @@ class Tab1Fragment : Fragment() {
     private fun navigateToViewAllContact() {
         val intent = Intent(activity, ContactAllActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun observeFavoriteContacts() {
+        // LiveData를 관찰하여 데이터가 업데이트될 때마다 UI 갱신
+        contactViewModel.allContacts.observe(viewLifecycleOwner) { contacts ->
+            updateRecyclerView(contacts)
+        }
     }
 
     private fun readContacts() {
@@ -125,7 +137,7 @@ class Tab1Fragment : Fragment() {
         when (requestCode) {
             REQUEST_READ_CONTACTS -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    readContacts()
+                    observeFavoriteContacts()
                 }
             }
         }
