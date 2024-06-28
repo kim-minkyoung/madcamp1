@@ -18,12 +18,15 @@ class ContactAdapter(
         fun bind(contact: Tab1Fragment.Contact) {
             binding.nameView.text = contact.name
             binding.numberView.text = contact.phoneNumber
-
+            binding.starView.text = if (contact.isFavorite == true) "★" else "☆"
             Glide.with(context)
                 .load(contact.photoUri)
                 .placeholder(R.drawable.default_profile_img) // 로딩 중 표시할 이미지
                 .error(R.drawable.default_profile_img)       // 오류 시 표시할 이미지
                 .into(binding.profileImageView)
+
+
+
         }
     }
 
