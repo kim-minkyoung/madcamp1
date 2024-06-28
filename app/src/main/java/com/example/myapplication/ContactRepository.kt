@@ -3,15 +3,16 @@ package com.example.myapplication
 import android.content.Context
 import android.provider.ContactsContract
 
+
 object ContactRepository {
-    private val contacts = mutableListOf<Contact>()
+    val contacts = mutableListOf<Contact>()
+    val contactsFavorite = mutableListOf<Contact>()
 
     fun addContact(contact: Contact) {
         contacts.add(contact)
     }
 
-    fun loadAllContacts(context: Context): List<Contact> {
-        val contacts = mutableListOf<Contact>()
+    fun loadAllContacts(context: Context) {
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
         val cursor = context.contentResolver.query(
             contactsUri,
@@ -80,9 +81,19 @@ object ContactRepository {
                         isFavorite
                     )
                 )
+
+                if (isFavorite) {
+                    contactsFavorite.add(
+                            Contact(
+                                name,
+                                formattedPhoneNumber,
+                                photoUri,
+                                isFavorite
+                            )
+                        )
+                }
             }
         }
-        return contacts.toList()
     }
 
     fun getContactByIndex(index: Int): Contact? {
@@ -91,6 +102,10 @@ object ContactRepository {
 
     fun getAllContacts(): List<Contact> {
         return contacts.toList()
+    }
+
+    fun getFavoriteContacts(): List<Contact> {
+        return contactsFavorite.toList()
     }
 
     // 전화번호를 원하는 형식으로 변환하는 함수

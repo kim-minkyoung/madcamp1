@@ -65,7 +65,8 @@ class Tab1Fragment : Fragment() {
         // 코루틴을 사용하여 백그라운드에서 데이터 쿼리
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val contacts = ContactRepository.loadAllContacts(requireContext())
+                ContactRepository.loadAllContacts(requireContext())
+                val contacts = ContactRepository.getFavoriteContacts()
                 withContext(Dispatchers.Main) {
                     updateRecyclerView(contacts)
                 }
@@ -74,6 +75,12 @@ class Tab1Fragment : Fragment() {
             }
         }
     }
+
+//    override fun onResume() {
+//        super.onResume()
+//        // Refresh contacts when the fragment resumes
+//        readContacts()
+//    }
 
     private fun updateRecyclerView(contacts: List<com.example.myapplication.Contact>) {
         recyclerView = binding.contactRecyclerView
