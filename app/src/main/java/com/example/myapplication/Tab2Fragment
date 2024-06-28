@@ -1,21 +1,31 @@
-//package com.example.myapplication
-//
-//import android.Manifest
-//import android.R
-//import android.annotation.SuppressLint
-//import android.content.pm.PackageManager
-//import android.os.Bundle
-//import android.provider.ContactsContract
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.widget.ArrayAdapter
-//import androidx.core.app.ActivityCompat
-//import androidx.core.content.ContextCompat
-//import androidx.fragment.app.Fragment
-//
-//import com.example.myapplication.databinding.FragmentTab1Binding
-//
+package com.malkinfo.multipleimages
+
+import android.Manifest
+import android.R
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.provider.ContactsContract
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+
+import com.example.myapplication.databinding.FragmentTab1Binding
+
+
+class Tab2Fragment : Fragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        /**ok now */
+    }
+}
+
 //class Tab2Fragment: Fragment() {
 //
 //    private var _binding: FragmentTab1Binding? = null
