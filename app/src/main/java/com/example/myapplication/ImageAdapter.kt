@@ -22,18 +22,16 @@ class ImageAdapter(private val images: MutableList<Uri>) :
         val uri = images[position]
         Glide.with(holder.itemView.context).load(uri).into(holder.image)
 
-        holder.itemView.setBackgroundColor(
-            if (selectedImages.contains(uri)) android.graphics.Color.BLACK else android.graphics.Color.TRANSPARENT
-        )
+        holder.chooseButton.visibility = if (isSelectMode) View.VISIBLE else View.GONE
+        holder.chooseButton.isSelected = selectedImages.contains(uri)
 
-        holder.selectButton.visibility = if (isSelectMode) View.VISIBLE else View.GONE
-        holder.selectButton.isSelected = selectedImages.contains(uri)
-
-        holder.selectButton.setOnClickListener {
-            if (holder.selectButton.isSelected) {
+        holder.chooseButton.setOnClickListener {
+            if (selectedImages.contains(uri)) {
                 selectedImages.remove(uri)
+                holder.chooseButton.setBackgroundResource(android.R.drawable.btn_default)
             } else {
                 selectedImages.add(uri)
+                holder.chooseButton.setBackgroundColor(android.graphics.Color.BLACK)
             }
             notifyItemChanged(position)
         }
@@ -51,7 +49,7 @@ class ImageAdapter(private val images: MutableList<Uri>) :
 
     inner class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView = itemView.findViewById(R.id.imageView)
-        val selectButton: ImageView = itemView.findViewById(R.id.selectButton)
+        val chooseButton: ImageView = itemView.findViewById(R.id.chooseButton)
         val deleteButton: ImageView = itemView.findViewById(R.id.deleteButton)
     }
 

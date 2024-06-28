@@ -12,14 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentTab2Binding
-import com.example.myapplication.R // Ensure you have the correct import for your R file
-import com.bumptech.glide.Glide
 
 class Tab2Fragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var imageAdapter: ImageAdapter
-    private var imageList = mutableListOf<Uri>()  // 이미지 URI를 저장할 리스트
+    private var imageList = mutableListOf<Uri>()
 
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
     private var _binding: FragmentTab2Binding? = null
