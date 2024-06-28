@@ -1,18 +1,16 @@
-package com.example.myapplication.view.activity
+package com.example.myapplication
 
-import com.example.myapplication.view.fragment.Tab2Fragment
+import Tab2Fragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +39,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun createFragment(position: Int): Fragment {
             return when (position) {
-                0 -> Tab1Fragment()
+                0 -> Tab2Fragment()
                 1 -> Tab2Fragment()
-                2 -> Tab1Fragment()
+                2 -> Tab2Fragment()
                 else -> throw IllegalArgumentException("Invalid position: $position")
             }
         }
