@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- 이미지가 정사각형으로 표시되도록 함 -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"/>
 
+    <!-- 선택 버튼을 이미지 위에 투명하게 표시되도록 함 -->
     <ImageView
         android:id="@+id/chooseButton"
         android:layout_width="24dp"
@@ -22,6 +24,7 @@
         android:background="@drawable/choose_button_background"
         android:padding="4dp"/>
 
+    <!-- 삭제 버튼의 위치를 이미지의 상단 오른쪽으로 설정 -->
     <ImageView
         android:id="@+id/deleteButton"
         android:layout_width="24dp"
