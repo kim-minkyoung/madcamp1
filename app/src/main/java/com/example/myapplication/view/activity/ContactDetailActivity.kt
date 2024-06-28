@@ -1,10 +1,12 @@
-package com.example.myapplication
+package com.example.myapplication.view.activity
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.view.fragment.Tab1Fragment
+import com.example.myapplication.model.repository.ContactRepository
 import com.example.myapplication.databinding.ActivityContactDetailBinding
 
 class ContactDetailActivity : AppCompatActivity() {

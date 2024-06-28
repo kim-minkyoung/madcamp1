@@ -1,3 +1,6 @@
+package com.example.myapplication.view.fragment
+
+import com.example.myapplication.view.adapter.ImageAdapter
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri

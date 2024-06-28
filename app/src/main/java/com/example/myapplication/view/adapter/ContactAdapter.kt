@@ -1,11 +1,13 @@
 // ContactAdapter.kt
-package com.example.myapplication
+package com.example.myapplication.view.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.myapplication.R
+import com.example.myapplication.model.data.Contact
 import com.example.myapplication.databinding.ContactListBinding
 
 class ContactAdapter(

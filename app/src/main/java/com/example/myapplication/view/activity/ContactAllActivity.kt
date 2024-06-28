@@ -1,18 +1,22 @@
-package com.example.myapplication
+package com.example.myapplication.view.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myapplication.databinding.FragmentTab1Binding
+import com.example.myapplication.view.adapter.ContactAdapter
+import com.example.myapplication.model.data.Contact
+import com.example.myapplication.model.repository.ContactRepository
+import com.example.myapplication.databinding.Fragment1RecyclerViewBinding
 
 class ContactAllActivity : AppCompatActivity() {
-    private lateinit var binding: FragmentTab1Binding // Activity의 바인딩 클래스로 수정
+    private lateinit var binding: Fragment1RecyclerViewBinding // Activity의 바인딩 클래스로 수정
+    private var contacts: List<Contact> = ContactRepository.getAllContacts()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = FragmentTab1Binding.inflate(layoutInflater)
+        binding = Fragment1RecyclerViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar) // 사용할 툴바 설정
@@ -24,8 +28,6 @@ class ContactAllActivity : AppCompatActivity() {
         // RecyclerView 설정
         binding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // 데이터 가져오기 및 설정
-        val contacts = ContactRepository.getAllContacts()
         val adapter = ContactAdapter(this, contacts) { contact ->
             val intent = Intent(this, ContactDetailActivity::class.java)
             startActivity(intent)

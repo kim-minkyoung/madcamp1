@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.view.fragment
 
 import android.Manifest
 import android.content.Intent
@@ -13,7 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.databinding.FragmentTab1Binding
+import com.example.myapplication.view.adapter.ContactAdapter
+import com.example.myapplication.model.repository.ContactRepository
+import com.example.myapplication.databinding.Fragment1RecyclerViewBinding
+import com.example.myapplication.view.activity.ContactAllActivity
+import com.example.myapplication.view.activity.ContactDetailActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +26,7 @@ class Tab1Fragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var contactAdapter: ContactAdapter
-    private var _binding: FragmentTab1Binding? = null
+    private var _binding: Fragment1RecyclerViewBinding? = null
     private val binding get() = _binding!!
 
     data class Contact(
@@ -41,8 +45,10 @@ class Tab1Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentTab1Binding.inflate(inflater, container, false)
+        _binding = Fragment1RecyclerViewBinding.inflate(inflater, container, false)
         binding.toolbar.visibility = View.GONE
+
+
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -97,7 +103,7 @@ class Tab1Fragment : Fragment() {
 //        readContacts()
 //    }
 
-    private fun updateRecyclerView(contacts: List<com.example.myapplication.Contact>) {
+    private fun updateRecyclerView(contacts: List<com.example.myapplication.model.data.Contact>) {
         recyclerView = binding.contactRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 

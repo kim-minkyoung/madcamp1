@@ -1,7 +1,8 @@
-package com.example.myapplication
+package com.example.myapplication.model.repository
 
 import android.content.Context
 import android.provider.ContactsContract
+import com.example.myapplication.model.data.Contact
 
 
 object ContactRepository {
