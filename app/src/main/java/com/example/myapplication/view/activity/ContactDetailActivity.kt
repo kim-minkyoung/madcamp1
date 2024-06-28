@@ -5,9 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.model.repository.ContactRepository
 import com.example.myapplication.databinding.ActivityContactDetailBinding
+import com.example.myapplication.model.data.Contact
 
 class ContactDetailActivity : AppCompatActivity() {
 
@@ -38,7 +38,7 @@ class ContactDetailActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun newIntent(context: Context, contact: Tab1Fragment.Contact): Intent {
+        fun newIntent(context: Context, contact: Contact): Intent {
             val intent = Intent(context, ContactDetailActivity::class.java)
             return intent
         }
