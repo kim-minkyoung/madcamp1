@@ -10,8 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -40,6 +38,7 @@ class Tab1Fragment : Fragment() {
 
     companion object {
         private const val REQUEST_READ_CONTACTS = 101
+        private const val REQUEST_WRITE_CONTACTS = 102
     }
 
     override fun onCreateView(
@@ -52,7 +51,7 @@ class Tab1Fragment : Fragment() {
         // READ_CONTACTS 권한 확인 및 처리
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.READ_CONTACTS
+                Manifest.permission.READ_CONTACTS,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // 권한이 없는 경우 권한 요청
@@ -84,7 +83,7 @@ class Tab1Fragment : Fragment() {
             try {
                 val cursor = requireContext().contentResolver.query(
                     contactsUri,
-                    projection,
+                    null,
                     null,
                     null,
                     null
@@ -166,7 +165,7 @@ class Tab1Fragment : Fragment() {
         val digits = phoneNumber.filter { it.isDigit() }
 
         // 전화번호 길이 확인
-        if (digits.length != 12) return phoneNumber // 너무 짧은 경우 원래 형식 유지
+        if (digits.length != 11) return phoneNumber // 너무 짧은 경우 원래 형식 유지
 
         // 형식화된 전화번호 생성
         return "${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
