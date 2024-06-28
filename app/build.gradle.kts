@@ -46,6 +46,7 @@ dependencies {
 
 dependencies {
     implementation ("com.github.bumptech.glide:glide:4.11.0")
+    implementation(libs.androidx.runtime.saved.instance.state)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")

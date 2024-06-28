@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> Tab1Fragment()
-                1 -> Tab2Fragment()
+                1 -> Tab1Fragment()
                 2 -> Tab1Fragment()
                 else -> throw IllegalArgumentException("Invalid position: $position")
             }

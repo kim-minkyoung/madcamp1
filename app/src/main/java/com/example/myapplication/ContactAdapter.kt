@@ -10,12 +10,13 @@ import com.example.myapplication.databinding.ContactListBinding
 
 class ContactAdapter(
     private val context: Context,
-    private val contactList: List<Tab1Fragment.Contact>
+    private var contactList: List<Contact>,
+    private val onItemClick: (Contact) -> Unit
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(contact: Tab1Fragment.Contact) {
+        fun bind(contact: Contact) {
             binding.nameView.text = contact.name
             binding.numberView.text = contact.phoneNumber
             binding.starView.text = if (contact.isFavorite == true) "★" else "☆"
@@ -25,8 +26,9 @@ class ContactAdapter(
                 .error(R.drawable.default_profile_img)       // 오류 시 표시할 이미지
                 .into(binding.profileImageView)
 
-
-
+            itemView.setOnClickListener {
+                onItemClick.invoke(contact)
+            }
         }
     }
 
@@ -42,5 +44,10 @@ class ContactAdapter(
 
     override fun getItemCount(): Int {
         return contactList.size
+    }
+
+    fun updateContacts(newContacts: List<Contact>) {
+        contactList = newContacts
+        notifyDataSetChanged()
     }
 }
