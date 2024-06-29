@@ -9,6 +9,7 @@ import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayoutMediator
+//import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
                 2 -> tab.text = "?"
             }
         }.attach()
+
+//        var keyHash = Utility.getKeyHash(this)
     }
 
 

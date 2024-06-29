@@ -16,9 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+//        jcenter()
+//        maven("https://repository.map.naver.com/archive/maven")
     }
 }
 
 rootProject.name = "My Application"
+//include(":app", ":library")
 include(":app")
- 

@@ -39,9 +39,13 @@ android {
     buildFeatures {
         dataBinding = true
     }
+
 }
 //tab 2번째에서 갤러리 추가
 dependencies {
+    // 네이버 지도 SDK
+//    implementation("com.naver.maps:map-sdk:3.18.0")
+
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("com.squareup.picasso:picasso:2.71828") // 이미지 로딩을 위한 라이브러리
