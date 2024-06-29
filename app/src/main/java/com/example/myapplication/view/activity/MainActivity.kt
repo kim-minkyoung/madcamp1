@@ -9,7 +9,6 @@ import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayoutMediator
-//import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         // ViewPager2 초기화 및 설정
         binding.viewPager.adapter = TabPagerAdapter(this)
+        binding.viewPager.isUserInputEnabled = false
 
         // TabLayout과 ViewPager2 연결
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private inner class TabPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
 
         override fun getItemCount(): Int {
-            return 3 // 탭의 수, 예시로 3개로 설정
+            return 3
         }
 
         override fun createFragment(position: Int): Fragment {
@@ -53,20 +53,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
