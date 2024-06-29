@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class ContactViewModel(application: Application) : AndroidViewModel(application) {
 
     private val contactRepository = ContactRepository
-    val allContacts = MutableLiveData<List<Contact>>()
+    val favoriteContacts = MutableLiveData<List<Contact>>()
 
     init {
         // 최초 데이터 로드
@@ -24,7 +24,16 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
                 // 최초 한 번만 데이터 로드
                 contactRepository.loadAllContacts(getApplication())
             }
-            allContacts.value = contactRepository.getFavoriteContacts()
+            favoriteContacts.value = contactRepository.getFavoriteContacts()
+        }
+    }
+
+    // 즐겨찾기 상태를 변경하는 함수
+    fun toggleFavoriteStatus(contact: Contact) {
+        viewModelScope.launch {
+            contactRepository.toggleFavoriteStatus(getApplication(), contact)
+            // 즐겨찾기 상태 변경 후 LiveData를 업데이트하여 Observer에게 알림
+            favoriteContacts.value = contactRepository.getFavoriteContacts()
         }
     }
 }

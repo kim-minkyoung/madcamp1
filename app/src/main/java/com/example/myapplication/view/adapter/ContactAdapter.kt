@@ -1,22 +1,31 @@
 // ContactAdapter.kt
 package com.example.myapplication.view.adapter
 
+import ContactViewModel
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.model.data.Contact
 import com.example.myapplication.databinding.ContactListBinding
 import com.example.myapplication.model.repository.ContactRepository
+import com.example.myapplication.view.activity.ContactDetailActivity
 
 class ContactAdapter(
     private val context: Context,
     private var contactList: List<Contact>,
-    private val onItemClick: (Contact) -> Unit
+    private val lifecycleOwner: LifecycleOwner?,
+    private val contactViewModel: ContactViewModel?,
+    private val onItemClick: (Contact) -> Unit = { contact ->
+        val intent = Intent(context, ContactDetailActivity::class.java)
+        context.startActivity(intent)
+    }
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -44,12 +53,17 @@ class ContactAdapter(
                     .setCancelable(false) // 다이얼로그 바깥 클릭이나 뒤로 가기 버튼을 눌러도 다이얼로그가 닫히지 않도록 설정
                     .setPositiveButton("예") { dialog, id ->
                         // "예" 버튼을 눌렀을 때 수행할 작업
-                        // 예: 즐겨찾기 해제 로직
-                        ContactRepository.toggleFavoriteStatus(context, contact)
+                        if (contactViewModel != null) {
+                            // Tab1Fragment
+                            contactViewModel.toggleFavoriteStatus(contact)
+                        } else {
+                            // ContactAllActivity
+                            ContactRepository.toggleFavoriteStatus(context, contact)
+                            // UI 업데이트를 위해 데이터 변경 후 전체 데이터 다시 불러오기
+                            contactList = ContactRepository.getAllContacts()
+                            notifyDataSetChanged()
+                        }
                         Toast.makeText(context, "즐겨찾기 $action 되었습니다.", Toast.LENGTH_SHORT).show()
-                        // UI 업데이트를 위해 데이터 변경 후 전체 데이터 다시 불러오기
-                        contactList = ContactRepository.getAllContacts()
-                        notifyDataSetChanged()
                     }
                     .setNegativeButton("아니요") { dialog, id ->
                         // "아니요" 버튼을 눌렀을 때 다이얼로그를 단순히 닫음

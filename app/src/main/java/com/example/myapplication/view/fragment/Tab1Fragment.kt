@@ -2,12 +2,15 @@ package com.example.myapplication.view.fragment
 
 import ContactViewModel
 import android.Manifest
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -46,7 +49,7 @@ class Tab1Fragment : Fragment() {
 
         // ViewModel 초기화
         contactViewModel = ViewModelProvider(this).get(ContactViewModel::class.java)
-        
+
         // 연락처 권한 확인 및 처리
         checkContactPermissions()
 
@@ -84,7 +87,7 @@ class Tab1Fragment : Fragment() {
 
     private fun observeFavoriteContacts() {
         // LiveData를 관찰하여 데이터가 업데이트될 때마다 UI 갱신
-        contactViewModel.allContacts.observe(viewLifecycleOwner) { contacts ->
+        contactViewModel.favoriteContacts.observe(viewLifecycleOwner) { contacts ->
             updateRecyclerView(contacts)
         }
     }
@@ -94,7 +97,7 @@ class Tab1Fragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Adapter 초기화 및 설정
-        contactAdapter = ContactAdapter(requireContext(), contacts) { contact ->
+        contactAdapter = ContactAdapter(requireContext(), contacts, viewLifecycleOwner, contactViewModel) { contact ->
             // 클릭 이벤트 처리
             val intent = Intent(activity, ContactDetailActivity::class.java)
             startActivity(intent)
@@ -120,6 +123,13 @@ class Tab1Fragment : Fragment() {
         val intent = Intent(activity, ContactAllActivity::class.java)
         startActivity(intent)
     }
+
+    // 외부에서 호출하여 즐겨찾기 목록을 다시 로드하는 함수
+    fun refreshFavoriteContacts() {
+        Log.d(TAG, "refreshFavoriteContacts() called")
+        Toast.makeText(requireContext(), "refreshFavoriteContacts.", Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
