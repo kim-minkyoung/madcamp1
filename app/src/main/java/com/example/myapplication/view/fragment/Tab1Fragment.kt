@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.view.adapter.ContactAdapter
 import com.example.myapplication.model.repository.ContactRepository
 import com.example.myapplication.databinding.Fragment1RecyclerViewBinding
+import com.example.myapplication.model.data.Contact
 import com.example.myapplication.view.activity.ContactAllActivity
 import com.example.myapplication.view.activity.ContactDetailActivity
 import kotlinx.coroutines.Dispatchers
@@ -32,16 +33,8 @@ class Tab1Fragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var contactViewModel: ContactViewModel
 
-    data class Contact(
-        val name: String,
-        val phoneNumber: String?,
-        val photoUri: String?,
-        val isFavorite: Boolean?
-    )
-    private val contactList = mutableListOf<Contact>()
-
     companion object {
-        private const val REQUEST_READ_CONTACTS = 101
+        private const val REQUEST_PERMISSIONS_CONTACTS = 101
     }
 
     override fun onCreateView(
@@ -53,38 +46,40 @@ class Tab1Fragment : Fragment() {
 
         // ViewModel 초기화
         contactViewModel = ViewModelProvider(this).get(ContactViewModel::class.java)
+        
+        // 연락처 권한 확인 및 처리
+        checkContactPermissions()
 
-        // READ_CONTACTS 권한 확인 및 처리
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_CONTACTS,
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // 권한이 없는 경우 권한 요청
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                REQUEST_READ_CONTACTS
-            )
-        } else {
-            // 권한이 있는 경우 연락처 데이터 읽어오기
-            observeFavoriteContacts()
+        // 전체 연락처 보기 버튼 클릭 시 이벤트 처리
+        binding.buttonAllView.setOnClickListener {
+            navigateToViewAllContact()
         }
+
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private fun checkContactPermissions() {
+        val readPermission = Manifest.permission.READ_CONTACTS
+        val writePermission = Manifest.permission.WRITE_CONTACTS
 
-        binding.buttonAllView.setOnClickListener {
-            // 버튼을 클릭했을 때 실행될 로직
-            navigateToViewAllContact()
+        val readPermissionGranted = ContextCompat.checkSelfPermission(requireContext(), readPermission) == PackageManager.PERMISSION_GRANTED
+        val writePermissionGranted = ContextCompat.checkSelfPermission(requireContext(), writePermission) == PackageManager.PERMISSION_GRANTED
+
+        if (!readPermissionGranted || !writePermissionGranted) {
+            // 권한이 없는 경우 권한 요청
+            val permissionsToRequest = mutableListOf<String>()
+            if (!readPermissionGranted) permissionsToRequest.add(readPermission)
+            if (!writePermissionGranted) permissionsToRequest.add(writePermission)
+
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                permissionsToRequest.toTypedArray(),
+                REQUEST_PERMISSIONS_CONTACTS
+            )
+        } else {
+            // 권한이 모두 있는 경우 연락처 데이터 읽어오기
+            observeFavoriteContacts()
         }
-    }
-
-    private fun navigateToViewAllContact() {
-        val intent = Intent(activity, ContactAllActivity::class.java)
-        startActivity(intent)
     }
 
     private fun observeFavoriteContacts() {
@@ -109,18 +104,12 @@ class Tab1Fragment : Fragment() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        // Refresh contacts when the fragment resumes
-//        readContacts()
-//    }
-
-    private fun updateRecyclerView(contacts: List<com.example.myapplication.model.data.Contact>) {
+    private fun updateRecyclerView(contacts: List<Contact>) {
         recyclerView = binding.contactRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Adapter 초기화 및 설정
-        contactAdapter = ContactAdapter(requireContext(), contacts)  { contact ->
+        contactAdapter = ContactAdapter(requireContext(), contacts) { contact ->
             // 클릭 이벤트 처리
             val intent = Intent(activity, ContactDetailActivity::class.java)
             startActivity(intent)
@@ -128,19 +117,23 @@ class Tab1Fragment : Fragment() {
         recyclerView.adapter = contactAdapter
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            REQUEST_READ_CONTACTS -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            REQUEST_PERMISSIONS_CONTACTS -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    // 모든 권한이 허용된 경우 연락처 데이터 읽어오기
                     observeFavoriteContacts()
+                } else {
+                    // 권한이 거부된 경우 사용자에게 앱 기능 제약 사항을 안내하는 등의 처리
                 }
             }
         }
+    }
+
+    private fun navigateToViewAllContact() {
+        val intent = Intent(activity, ContactAllActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

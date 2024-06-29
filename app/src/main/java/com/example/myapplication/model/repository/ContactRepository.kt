@@ -1,5 +1,6 @@
 package com.example.myapplication.model.repository
 
+import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
 import com.example.myapplication.model.data.Contact
@@ -90,16 +91,61 @@ object ContactRepository {
 
     }
 
-    fun getContactByIndex(index: Int): Contact? {
-        return if (index in contacts.indices) contacts[index] else null
-    }
-
     fun getAllContacts(): List<Contact> {
         return contacts.toList()
     }
 
     fun getFavoriteContacts(): List<Contact> {
         return contactsFavorite.toList()
+    }
+
+    // 전화번호부의 즐겨찾기 상태를 토글하는 함수
+    fun toggleFavoriteStatus(context: Context, contact: Contact) {
+        val contactId = getContactId(context, contact) ?: return
+
+        val isCurrentlyFavorite = contact.isFavorite
+        val newFavoriteStatus = if (isCurrentlyFavorite == true) 0 else 1
+
+        val values = ContentValues().apply {
+            put(ContactsContract.Contacts.STARRED, newFavoriteStatus)
+        }
+
+        val updateUri = ContactsContract.Contacts.CONTENT_URI
+        val selection = "${ContactsContract.Contacts._ID} = ?"
+        val selectionArgs = arrayOf(contactId)
+
+        val rowsUpdated = context.contentResolver.update(updateUri, values, selection, selectionArgs)
+        if (rowsUpdated > 0) {
+            contact.isFavorite = newFavoriteStatus == 1
+            if (contact.isFavorite == true) {
+                contactsFavorite.add(contact)
+            } else {
+                contactsFavorite.remove(contact)
+            }
+        }
+    }
+
+    // 전화번호부에서 연락처 ID를 가져오는 함수
+    private fun getContactId(context: Context, contact: Contact): String? {
+        val contactsUri = ContactsContract.Contacts.CONTENT_URI
+        val cursor = context.contentResolver.query(
+            contactsUri,
+            arrayOf(ContactsContract.Contacts._ID),
+            "${ContactsContract.Contacts.DISPLAY_NAME} = ?",
+            arrayOf(contact.name),
+            null
+        )
+
+        cursor?.use { c ->
+            if (c.moveToFirst()) {
+                val idIndex = c.getColumnIndex(ContactsContract.Contacts._ID)
+                if (idIndex != -1) {
+                    return c.getString(idIndex)
+                }
+            }
+        }
+
+        return null
     }
 
     // 전화번호를 원하는 형식으로 변환하는 함수
