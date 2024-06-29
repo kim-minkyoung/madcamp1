@@ -36,6 +36,9 @@ android {
     viewBinding {
         enable = true
     }
+    buildFeatures {
+        dataBinding = true
+    }
 }
 //tab 2번째에서 갤러리 추가
 dependencies {

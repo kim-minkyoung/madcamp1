@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.view.fragment.Tab1Fragment
+import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             return when (position) {
                 0 -> Tab1Fragment()
                 1 -> Tab2Fragment()
-                2 -> Tab1Fragment()
+                2 -> Tab3Fragment()
                 else -> throw IllegalArgumentException("Invalid position: $position")
             }
         }
