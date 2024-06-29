@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         }.attach()
     }
 
+
     private inner class TabPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
 
         override fun getItemCount(): Int {
