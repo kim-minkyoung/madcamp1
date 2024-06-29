@@ -89,21 +89,6 @@ class Tab1Fragment : Fragment() {
         }
     }
 
-    private fun readContacts() {
-        // 코루틴을 사용하여 백그라운드에서 데이터 쿼리
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                ContactRepository.loadAllContacts(requireContext())
-                val contacts = ContactRepository.getFavoriteContacts()
-                withContext(Dispatchers.Main) {
-                    updateRecyclerView(contacts)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     private fun updateRecyclerView(contacts: List<Contact>) {
         recyclerView = binding.contactRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
