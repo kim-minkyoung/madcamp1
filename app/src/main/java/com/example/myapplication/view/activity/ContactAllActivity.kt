@@ -22,6 +22,7 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
     private var contacts: List<Contact> = ContactRepository.getAllContacts()
     private lateinit var adapter: ContactAdapter
 
+    //test
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Fragment1RecyclerViewBinding.inflate(layoutInflater)
