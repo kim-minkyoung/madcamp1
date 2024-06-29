@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             when (position) {
                 0 -> tab.text = "전화번호부"
                 1 -> tab.text = "갤러리"
-                2 -> tab.text = "?"
+                2 -> tab.text = "지도"
             }
         }.attach()
 
