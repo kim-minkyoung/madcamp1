@@ -22,17 +22,12 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
     private var contacts: List<Contact> = ContactRepository.getAllContacts()
     private lateinit var adapter: ContactAdapter
 
-    //test
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Fragment1RecyclerViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(android.R.drawable.ic_menu_revert)
-        }
+        binding.toolbar.visibility = View.GONE
 
         binding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -58,8 +53,6 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
     }
 
     // Tab1Fragment로 즐겨찾기 목록 새로고침 이벤트 전달
-    // ContactAllActivity.kt
-    // ContactAllActivity.kt
     override fun onRefreshFavoriteContacts() {
         val fragmentTag = "tab1_fragment_tag"
         val fragment = supportFragmentManager.findFragmentByTag(fragmentTag) as? Tab1Fragment

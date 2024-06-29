@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="MyApplication" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Regular 폰트를 기본 폰트로 설정 -->
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <item name="fontFamily">@font/pretendard_regular</item> <!-- Support Library -->
+    </style>
+
+    <!-- 굵은 폰트를 사용하기 위한 텍스트 스타일 -->
+    <style name="BoldText">
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="fontFamily">@font/pretendard_bold</item>
+    </style>
+</resources>
