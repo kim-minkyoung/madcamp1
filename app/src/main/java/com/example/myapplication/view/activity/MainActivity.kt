@@ -11,7 +11,7 @@ import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
-
+    //binding class 로 view access
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
+        //ViewPager2: Fragment를 스와이프하여 탐색할 수 있는 화면
         // ViewPager2 초기화 및 설정
         binding.viewPager.adapter = TabPagerAdapter(this)
         binding.viewPager.isUserInputEnabled = false

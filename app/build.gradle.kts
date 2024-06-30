@@ -33,6 +33,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    //viewBinding 활성화
     viewBinding {
         enable = true
     }
@@ -67,9 +68,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-
+    implementation ("androidx.fragment:fragment-ktx:1.3.6")
     // 테스트 관련 종속성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    //위치 권한 관련
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 }
