@@ -13,8 +13,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
+import com.example.myapplication.model.viewModel.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -53,6 +55,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private val marker = Marker()
+    private val viewModel: MapViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,7 +91,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         }
         placesClient = Places.createClient(requireContext())
 
-        // AutoCompleteTextView 설정
+        // AutoCompleteTextView 설정: 주소 자동 검색
         autoCompleteTextView = binding.address as AutoCompleteTextView
         autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
         autoCompleteTextView.setAdapter(autoCompleteAdapter)
@@ -105,11 +108,21 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         binding.submit.setOnClickListener {
             val address = binding.address.text.toString()
             if (address.isNotEmpty()) {
-                searchAddress(address)
+                viewModel.searchAddress(address)
             } else {
                 Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.addressData.observe(viewLifecycleOwner, { data ->
+            val (roadAddress, latitude, longitude) = data
+            updateBottomSheet(roadAddress, latitude, longitude)
+            moveCameraToLocation(latitude, longitude)
+        })
+
+        viewModel.errorMessage.observe(viewLifecycleOwner, { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        })
     }
 
     private fun fetchAutocompletePredictions(query: String) {
@@ -130,6 +143,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    // 위치 권한 요청 함수
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -139,73 +153,13 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
-            } else -> {
-            // No location access granted
-            Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
-            requireActivity().finish()
-        }
-        }
-    }
-
-    private fun searchAddress(address: String) {
-        val client = OkHttpClient()
-        val url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$address"
-
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("X-NCP-APIGW-API-KEY-ID", "w86eyz5x78")
-            .addHeader("X-NCP-APIGW-API-KEY", "yq4vrhypcs")
-            .build()
-
-        client.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                e.printStackTrace()
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), "검색 실패", Toast.LENGTH_SHORT).show()
-                }
             }
-
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                response.body?.string()?.let {
-                    Log.d("API Response", it) // 응답 로그 출력
-                    try {
-                        val jsonObject = JSONObject(it)
-                        // "addresses" 필드가 있는지 확인
-                        if (jsonObject.has("addresses")) {
-                            val addresses = jsonObject.getJSONArray("addresses")
-                            // "addresses" 배열에 결과가 있는지 확인
-                            if (addresses.length() > 0) {
-                                val firstAddress = addresses.getJSONObject(0)
-                                val roadAddress = firstAddress.getString("roadAddress")
-                                val latitude = firstAddress.getDouble("y")
-                                val longitude = firstAddress.getDouble("x")
-
-                                requireActivity().runOnUiThread {
-                                    updateBottomSheet(roadAddress, latitude, longitude)
-                                    moveCameraToLocation(latitude, longitude)
-                                }
-                            } else {
-                                // 검색 결과가 없을 때
-                                requireActivity().runOnUiThread {
-                                    Toast.makeText(requireContext(), "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        } else {
-                            // "addresses" 필드가 없을 때
-                            requireActivity().runOnUiThread {
-                                Toast.makeText(requireContext(), "주소 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } catch (e: JSONException) {
-                        // JSON 파싱 실패 시
-                        e.printStackTrace()
-                        requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), "검색 결과 파싱 실패", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+            else -> {
+                // No location access granted
+                Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
+                requireActivity().finish()
             }
-        })
+        }
     }
 
     private fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
@@ -314,4 +268,3 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         mapView.onLowMemory()
     }
 }
-
