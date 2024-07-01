@@ -1,6 +1,7 @@
 package com.example.myapplication.view.fragment
 
 import android.Manifest
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,14 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
 import com.example.myapplication.model.viewModel.MapViewModel
-import com.example.myapplication.view.adapter.AddressAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -24,12 +27,16 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.overlay.Marker
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import java.util.*
+import com.naver.maps.map.overlay.Marker
+import com.example.myapplication.model.interfaces.SavePlaceListener
+import com.example.myapplication.view.adapter.AddressAdapter
+import com.example.myapplication.view.fragment.SavePlaceDialogFragment
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
@@ -45,6 +52,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private var placesClient: PlacesClient? = null
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private lateinit var addressAdapter: AddressAdapter
@@ -76,6 +84,11 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
 
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "w86eyz5x78")
+        }
+        placesClient = Places.createClient(requireContext())
+
         autoCompleteTextView = binding.address as AutoCompleteTextView
         autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
         autoCompleteTextView.setAdapter(autoCompleteAdapter)
@@ -91,7 +104,6 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         binding.submit.setOnClickListener {
             val address = binding.address.text.toString()
             if (address.isNotEmpty()) {
-                Log.d(TAG, "Searching for address: $address")
                 viewModel.searchPlaceByName(address)
             } else {
                 Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -100,25 +112,37 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         viewModel.addressData.observe(viewLifecycleOwner, { data ->
             val (roadAddress, latitude, longitude) = data
-            Log.d(TAG, "Address data observed: $roadAddress, lat: $latitude, lon: $longitude")
             updateBottomSheet(roadAddress, latitude, longitude)
             moveCameraToLocation(latitude, longitude)
         })
 
         viewModel.errorMessage.observe(viewLifecycleOwner, { message ->
-            Log.e(TAG, "Error observed: $message")
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         })
 
         // RecyclerView 초기화
         binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        addressAdapter = AddressAdapter(requireContext(), mutableListOf(), _binding!!.emptyStateText)
+        addressAdapter = AddressAdapter(mutableListOf()) // 초기화할 때 빈 리스트를 전달
         binding.addressRecyclerView.adapter = addressAdapter
-        updateEmptyState()
     }
 
     private fun fetchAutocompletePredictions(query: String) {
-        // This function can remain unchanged if you are using another service for autocomplete
+        val token = AutocompleteSessionToken.newInstance()
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .setSessionToken(token)
+            .build()
+
+        placesClient?.findAutocompletePredictions(request)?.addOnSuccessListener { response ->
+            val predictions = response.autocompletePredictions
+            val suggestionList = predictions.map { it.getFullText(null).toString() }
+            autoCompleteAdapter.clear()
+            autoCompleteAdapter.addAll(suggestionList)
+            autoCompleteAdapter.notifyDataSetChanged()
+        }?.addOnFailureListener { exception ->
+            Log.e(TAG, "Error fetching autocomplete predictions", exception)
+            exception.printStackTrace()
+        }
     }
 
     private val locationPermissionRequest = registerForActivityResult(
@@ -156,20 +180,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         naverMap.setOnMapClickListener { _, coord ->
             marker.position = LatLng(coord.latitude, coord.longitude)
             marker.map = naverMap
-            getAddress(coord.latitude, coord.longitude)
-        }
-    }
-
-    private fun getAddress(latitude: Double, longitude: Double) {
-        val query = "$latitude,$longitude"
-        viewModel.searchPlaceByCoordinates(query)
-    }
-
-    private fun updateEmptyState() {
-        if (addressAdapter.itemCount == 0) {
-            _binding!!.emptyStateText.visibility = View.VISIBLE
-        } else {
-            _binding!!.emptyStateText.visibility = View.GONE
+            viewModel.reverseGeocode(coord.latitude, coord.longitude)
         }
     }
 
@@ -210,10 +221,6 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     }
 }
 
-
-
-//
-//
 //
 //
 //
