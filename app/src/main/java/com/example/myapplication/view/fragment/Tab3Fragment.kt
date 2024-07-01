@@ -47,6 +47,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentTab3Binding? = null
     private val binding get() = _binding!!
+
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
@@ -55,6 +56,8 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private val marker = Marker()
+
+    // ViewModel 인스턴스 생성
     private val viewModel: MapViewModel by viewModels()
 
     override fun onCreateView(
@@ -74,10 +77,10 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             Manifest.permission.ACCESS_COARSE_LOCATION
         ))
 
-        // FusedLocationSource 초기화
+        // FusedLocationSource 초기화 (현위치 가져오기)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        // MapView 초기화 및 설정
+        // MapView 초기화
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -87,15 +90,16 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // Places API 초기화
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "YOUR_API_KEY")  // 실제 API 키로 교체
+            Places.initialize(requireContext(), "YOUR_API_KEY")  // TODO: 실제 API 키로 교체
         }
         placesClient = Places.createClient(requireContext())
 
-        // AutoCompleteTextView 설정: 주소 자동 검색
+        // AutoCompleteTextView 설정: 주소 자동 검색을 위한 어댑터를 초기화
         autoCompleteTextView = binding.address as AutoCompleteTextView
         autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
         autoCompleteTextView.setAdapter(autoCompleteAdapter)
 
+        // AutoCompleteTextView에서 키 입력을 감지하여 자동 완성 요청을 수행
         autoCompleteTextView.setOnKeyListener { _, _, _ ->
             val query = autoCompleteTextView.text.toString()
             if (query.isNotEmpty()) {
@@ -104,27 +108,31 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             false
         }
 
-        // Set search button click listener
+        // 검색 버튼 클릭 리스너를 설정
         binding.submit.setOnClickListener {
             val address = binding.address.text.toString()
             if (address.isNotEmpty()) {
+                // ViewModel을 통해 주소 검색을 요청합니다.
                 viewModel.searchAddress(address)
             } else {
                 Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
+        // ViewModel의 LiveData(searchAddress)를 관찰하여 주소 데이터를 업데이트
         viewModel.addressData.observe(viewLifecycleOwner, { data ->
             val (roadAddress, latitude, longitude) = data
             updateBottomSheet(roadAddress, latitude, longitude)
             moveCameraToLocation(latitude, longitude)
         })
 
+        // ViewModel의 LiveData를 관찰하여 에러 메시지를 표시
         viewModel.errorMessage.observe(viewLifecycleOwner, { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         })
     }
 
+    // 자동완성 관리 함수
     private fun fetchAutocompletePredictions(query: String) {
         val token = AutocompleteSessionToken.newInstance()
         val request = FindAutocompletePredictionsRequest.builder()
@@ -143,19 +151,19 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    // 위치 권한 요청 함수
+    // 위치 권한 요청에 대한 결과를 처리하는 콜백
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted.
+                // 정확한 위치 접근 권한이 허용됨
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Only approximate location access granted.
+                // 대략적인 위치 접근 권한이 허용됨
             }
             else -> {
-                // No location access granted
+                // 위치 접근 권한이 거부됨
                 Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                 requireActivity().finish()
             }
@@ -178,17 +186,16 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
-        // naverMap locationSource에 FusedLocationSource 적용
+        // naverMap에 FusedLocationSource를 적용합니다.
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        // 지도가 클릭 되면 onMapClick() 콜백 메서드가 호출 되며, 파라미터로 클릭된 지점의 화면 좌표와 지도 좌표가 전달 된다.
+        // 지도 클릭 이벤트 리스너를 설정합니다.
         naverMap.setOnMapClickListener { point, coord ->
             marker(coord.latitude, coord.longitude)
         }
     }
 
-    // 클릭 된 지점의 좌표에 마커를 추가하는 함수
     private fun marker(latitude: Double, longitude: Double) {
         marker.position = LatLng(latitude, longitude)
         marker.map = naverMap
@@ -196,27 +203,25 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         getAddress(latitude, longitude)
     }
 
-    // 클릭 된 지점의 좌표에 대한 주소를 구하는 함수
     private fun getAddress(latitude: Double, longitude: Double) {
-        // Geocoder 선언
+        // Geocoder를 초기화합니다.
         val geocoder = Geocoder(requireContext(), Locale.KOREAN)
 
-        // 안드로이드 API 레벨이 33 이상인 경우
+        // Android API 레벨 33 이상에서 Geocoder를 사용하는 방법
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(
                 latitude, longitude, 1
             ) { addresses ->
                 if (addresses.isNotEmpty()) {
-                    // 반환 값에서 전체 주소만 사용한다.
+                    // 주소를 Toast로 표시합니다.
                     toast(addresses[0].getAddressLine(0))
                 }
             }
-        } else { // API 레벨이 33 미만인 경우
+        } else { // API 레벨 33 미만에서 Geocoder를 사용하는 방법
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null) {
-                if (addresses.isNotEmpty()) {
-                    toast(addresses[0].getAddressLine(0))
-                }
+            if (addresses != null && addresses.isNotEmpty()) {
+                // 주소를 Toast로 표시합니다.
+                toast(addresses[0].getAddressLine(0))
             }
         }
     }
