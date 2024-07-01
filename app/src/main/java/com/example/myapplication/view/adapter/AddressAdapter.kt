@@ -1,11 +1,13 @@
 package com.example.myapplication.view.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemAddressBinding
 
-class AddressAdapter(private val addressList: MutableList<String>) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
+class AddressAdapter(private val addressList: MutableList<String>, private val emptyStateTextView: TextView) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
         val binding = ItemAddressBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,6 +26,15 @@ class AddressAdapter(private val addressList: MutableList<String>) : RecyclerVie
     fun addAddress(address: String) {
         addressList.add(address)
         notifyDataSetChanged()
+        updateEmptyState()
+    }
+
+    private fun updateEmptyState() {
+        if (addressList.isEmpty()) {
+            emptyStateTextView.visibility = View.VISIBLE
+        } else {
+            emptyStateTextView.visibility = View.GONE
+        }
     }
 
     class AddressViewHolder(private val binding: ItemAddressBinding) : RecyclerView.ViewHolder(binding.root) {

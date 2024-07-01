@@ -30,14 +30,6 @@
             app:behavior_peekHeight="100dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-            <!-- Bottom Sheet content -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="내가 즐겨 가는 장소"
-                android:textSize="24sp" />
-
             <!-- RecyclerView to display addresses -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/address_recycler_view"
@@ -45,6 +37,15 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/empty_state_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="좋아하는 장소를 검색해서 추가해보세요"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 

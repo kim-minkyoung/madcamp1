@@ -9,14 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
 import com.example.myapplication.model.viewModel.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -28,15 +25,12 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.LocationTrackingMode
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import java.util.*
 import com.naver.maps.map.overlay.Marker
-import com.example.myapplication.model.interfaces.SavePlaceListener
 import com.example.myapplication.view.adapter.AddressAdapter
-import com.example.myapplication.view.fragment.SavePlaceDialogFragment
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
@@ -122,8 +116,9 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // RecyclerView 초기화
         binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        addressAdapter = AddressAdapter(mutableListOf()) // 초기화할 때 빈 리스트를 전달
+        addressAdapter = AddressAdapter(mutableListOf(), _binding!!.emptyStateText)
         binding.addressRecyclerView.adapter = addressAdapter
+        updateEmptyState()
     }
 
     private fun fetchAutocompletePredictions(query: String) {
@@ -245,6 +240,14 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private fun showSavePlaceDialog(address: String) {
         val dialog = SavePlaceDialogFragment.newInstance(null, address)
         dialog.show(childFragmentManager, "SavePlaceDialog")
+    }
+
+    private fun updateEmptyState() {
+        if (addressAdapter.itemCount == 0) {
+            _binding!!.emptyStateText.visibility = View.VISIBLE
+        } else {
+            _binding!!.emptyStateText.visibility = View.GONE
+        }
     }
 
     override fun onStart() {
