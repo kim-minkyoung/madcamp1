@@ -9,40 +9,62 @@
     tools:context=".view.activity.MainActivity">
 
     <!-- 앱 제목을 표시하는 TextView -->
-
     <TextView
         android:id="@+id/text_app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:gravity="start"
-        android:paddingVertical="8dp"
-        android:text="Memories Connect"
+        android:text="ARCHIVE"
         android:textColor="@color/teal"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:paddingVertical="8dp" />
+
+    <!-- 부제목을 표시하는 TextView -->
+    <TextView
+        android:id="@+id/text_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" - 내 최애들만 따로 모아보자!"
+        android:textColor="@color/teal"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/text_app_title"
+        app:layout_constraintTop_toTopOf="@id/text_app_title"
+        android:layout_marginTop="12dp"/>
+
+    <!-- 설명을 표시하는 TextView -->
+    <TextView
+        android:id="@+id/text_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This app helps you to archive and save your favorite items."
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_app_title"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:paddingBottom="8dp"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/text_app_title"
+        app:layout_constraintTop_toBottomOf="@id/text_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tab_layout"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_pager"
         app:tabGravity="fill"
         app:tabMode="fixed"

@@ -8,18 +8,30 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
-    //binding class 로 view access
+    // Binding class로 view access
     private lateinit var binding: ActivityMainBinding
+
+    // 고정된 앞부분과 뒷부분 문구
+    private val commonPrefix = "내가 좋아하는"
+    private val commonSuffix = "만 따로 모아봐요."
+
+    // 중간에 들어갈 변화 부분
+    private val tabMiddleDescriptions = arrayOf(
+        "/자주 연락하는 사람들의 전화번호",
+        " 사진들",
+        " 장소들"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        //ViewPager2: Fragment를 스와이프하여 탐색할 수 있는 화면
+
         // ViewPager2 초기화 및 설정
         binding.viewPager.adapter = TabPagerAdapter(this)
         binding.viewPager.isUserInputEnabled = false
@@ -29,18 +41,42 @@ class MainActivity : AppCompatActivity() {
             when (position) {
                 0 -> tab.text = "전화번호부"
                 1 -> tab.text = "갤러리"
-                2 -> tab.text = "?"
+                2 -> tab.text = "장소"
             }
         }.attach()
 
-//        var keyHash = Utility.getKeyHash(this)
+        // 초기 설명 설정
+        updateDescription(0)
+
+        // 탭 선택 리스너 추가
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                updateDescription(tab.position)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                // Do nothing
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                // Do nothing
+            }
+        })
     }
 
+    // 선택된 탭에 따라 설명 텍스트를 업데이트하는 함수
+    private fun updateDescription(position: Int) {
+        if (position in tabMiddleDescriptions.indices) {
+            val description = "$commonPrefix${tabMiddleDescriptions[position]}$commonSuffix"
+            binding.textDescription.text = description
+        } else {
+            binding.textDescription.text = " 것들"
+        }
+    }
 
     private inner class TabPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
-
         override fun getItemCount(): Int {
-            return 3
+            return tabMiddleDescriptions.size
         }
 
         override fun createFragment(position: Int): Fragment {

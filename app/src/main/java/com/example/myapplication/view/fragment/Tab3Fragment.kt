@@ -1,7 +1,9 @@
 package com.example.myapplication.view.fragment
 
 import android.Manifest
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import android.util.Log  // Log 클래스 임포트
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -32,6 +33,9 @@ import okhttp3.Request
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
+import java.util.*
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
@@ -45,9 +49,10 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
-    private lateinit var placesClient: PlacesClient
+    private var placesClient: PlacesClient? = null
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
+    private val marker = Marker()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -114,13 +119,13 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             .setSessionToken(token)
             .build()
 
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+        placesClient?.findAutocompletePredictions(request)?.addOnSuccessListener { response ->
             val predictions = response.autocompletePredictions
             val suggestionList = predictions.map { it.getFullText(null).toString() }
             autoCompleteAdapter.clear()
             autoCompleteAdapter.addAll(suggestionList)
             autoCompleteAdapter.notifyDataSetChanged()
-        }.addOnFailureListener { exception ->
+        }?.addOnFailureListener { exception ->
             exception.printStackTrace()
         }
     }
@@ -222,6 +227,55 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         // naverMap locationSource에 FusedLocationSource 적용
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        // 지도가 클릭 되면 onMapClick() 콜백 메서드가 호출 되며, 파라미터로 클릭된 지점의 화면 좌표와 지도 좌표가 전달 된다.
+        naverMap.setOnMapClickListener { point, coord ->
+            marker(coord.latitude, coord.longitude)
+        }
+    }
+
+    // 클릭 된 지점의 좌표에 마커를 추가하는 함수
+    private fun marker(latitude: Double, longitude: Double) {
+        marker.position = LatLng(latitude, longitude)
+        marker.map = naverMap
+
+        getAddress(latitude, longitude)
+    }
+
+    // 클릭 된 지점의 좌표에 대한 주소를 구하는 함수
+    private fun getAddress(latitude: Double, longitude: Double) {
+        // Geocoder 선언
+        val geocoder = Geocoder(requireContext(), Locale.KOREAN)
+
+        // 안드로이드 API 레벨이 33 이상인 경우
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            geocoder.getFromLocation(
+                latitude, longitude, 1
+            ) { addresses ->
+                if (addresses.isNotEmpty()) {
+                    // 반환 값에서 전체 주소만 사용한다.
+                    toast(addresses[0].getAddressLine(0))
+                }
+            }
+        } else { // API 레벨이 33 미만인 경우
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null) {
+                if (addresses.isNotEmpty()) {
+                    toast(addresses[0].getAddressLine(0))
+                }
+            }
+        }
+    }
+
+    private fun toast(text: String) {
+        requireActivity().runOnUiThread {
+            Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showSavePlaceDialog(placeName: String?, address: String?) {
+        val dialog = SavePlaceDialogFragment.newInstance(placeName, address)
+        dialog.show(childFragmentManager, "SavePlaceDialog")
     }
 
     override fun onStart() {
