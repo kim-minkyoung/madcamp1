@@ -25,6 +25,11 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.overlay.Marker
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import java.util.*
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
@@ -107,8 +112,9 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // RecyclerView 초기화
         binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        addressAdapter = AddressAdapter(mutableListOf()) // 초기화할 때 빈 리스트를 전달
+        addressAdapter = AddressAdapter(requireContext(), mutableListOf(), _binding!!.emptyStateText)
         binding.addressRecyclerView.adapter = addressAdapter
+        updateEmptyState()
     }
 
     private fun fetchAutocompletePredictions(query: String) {
@@ -157,6 +163,14 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private fun getAddress(latitude: Double, longitude: Double) {
         val query = "$latitude,$longitude"
         viewModel.searchPlaceByCoordinates(query)
+    }
+
+    private fun updateEmptyState() {
+        if (addressAdapter.itemCount == 0) {
+            _binding!!.emptyStateText.visibility = View.VISIBLE
+        } else {
+            _binding!!.emptyStateText.visibility = View.GONE
+        }
     }
 
     override fun onStart() {

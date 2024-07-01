@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- fragment_tab3.xml -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -12,12 +12,12 @@
         android:layout_height="match_parent"
         tools:context=".view.fragment.Tab3Fragment">
 
+        <!-- MapView or any other content -->
         <com.naver.maps.map.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Persistent Bottom Sheet -->
         <!-- Persistent Bottom Sheet -->
         <LinearLayout
             android:id="@+id/persistent_bottom_sheet"
@@ -30,13 +30,8 @@
             app:behavior_peekHeight="100dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-            <!-- Bottom Sheet content -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="내가 즐겨 가는 장소"
-                android:textSize="24sp" />
+            <!-- Custom Handle Layout -->
+            <include layout="@layout/bottom_sheet_handle" />
 
             <!-- RecyclerView to display addresses -->
             <androidx.recyclerview.widget.RecyclerView
@@ -46,9 +41,18 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
+            <TextView
+                android:id="@+id/empty_state_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="좋아하는 장소를 검색해서 내 저장소에 추가해보세요"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
         </LinearLayout>
 
-
+        <!-- Search Bar Layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,14 +71,17 @@
                 android:singleLine="true"
                 android:imeOptions="actionSearch"/>
 
+            <!-- Search Button -->
             <Button
                 android:id="@+id/submit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="검색" />
+
         </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>
 
 
