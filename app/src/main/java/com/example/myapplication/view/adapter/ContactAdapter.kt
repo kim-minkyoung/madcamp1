@@ -1,7 +1,5 @@
-// ContactAdapter.kt
 package com.example.myapplication.view.adapter
 
-import ContactViewModel
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -15,6 +13,7 @@ import com.example.myapplication.R
 import com.example.myapplication.model.data.Contact
 import com.example.myapplication.databinding.ContactListBinding
 import com.example.myapplication.model.repository.ContactRepository
+import com.example.myapplication.model.viewModel.ContactViewModel
 import com.example.myapplication.view.activity.ContactDetailActivity
 
 class ContactAdapter(
@@ -28,6 +27,8 @@ class ContactAdapter(
     }
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
+    private var filteredContacts: List<Contact> = contactList
+
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(contact: Contact) {
@@ -36,8 +37,8 @@ class ContactAdapter(
             binding.starView.text = if (contact.isFavorite == true) "★" else "☆"
             Glide.with(context)
                 .load(contact.photoUri)
-                .placeholder(R.drawable.default_profile_img) // 로딩 중 표시할 이미지
-                .error(R.drawable.default_profile_img)       // 오류 시 표시할 이미지
+                .placeholder(R.drawable.default_profile_img)
+                .error(R.drawable.default_profile_img)
                 .into(binding.profileImageView)
 
             itemView.setOnClickListener {
@@ -47,34 +48,27 @@ class ContactAdapter(
                 val action = if (contact.isFavorite == true) "삭제" else "추가"
                 val message = "즐겨찾기를 $action 하시겠습니까?\n실제 전화번호부에도 즐겨찾기 변경 사항이 반영됩니다."
 
-                // AlertDialog Builder를 사용하여 다이얼로그 생성
                 val builder = AlertDialog.Builder(context)
                 builder.setMessage(message)
-                    .setCancelable(false) // 다이얼로그 바깥 클릭이나 뒤로 가기 버튼을 눌러도 다이얼로그가 닫히지 않도록 설정
+                    .setCancelable(false)
                     .setPositiveButton("예") { dialog, id ->
-                        // "예" 버튼을 눌렀을 때 수행할 작업
                         if (contactViewModel != null) {
-                            // Tab1Fragment
                             contactViewModel.toggleFavoriteStatus(contact)
                         } else {
-                            // ContactAllActivity
                             ContactRepository.toggleFavoriteStatus(context, contact)
                             // UI 업데이트를 위해 데이터 변경 후 전체 데이터 다시 불러오기
                             contactList = ContactRepository.getAllContacts()
-                            notifyDataSetChanged()
+                            filterContacts("")
                         }
                         Toast.makeText(context, "즐겨찾기 $action 되었습니다.", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("아니요") { dialog, id ->
-                        // "아니요" 버튼을 눌렀을 때 다이얼로그를 단순히 닫음
                         dialog.dismiss()
                     }
 
-                // 다이얼로그를 실제로 보여줌
                 val alert = builder.create()
                 alert.show()
             }
-
         }
     }
 
@@ -84,16 +78,27 @@ class ContactAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contact = contactList[position]
+        val contact = filteredContacts[position]
         holder.bind(contact)
     }
 
     override fun getItemCount(): Int {
-        return contactList.size
+        return filteredContacts.size
     }
 
-    fun updateContacts(newContacts: List<Contact>) {
+    fun updateData(newContacts: List<Contact>) {
         contactList = newContacts
+        filterContacts("")
+    }
+
+    private fun filterContacts(query: String) {
+        filteredContacts = if (query.isBlank()) {
+            contactList // 검색어가 없으면 전체 목록 보여주기
+        } else {
+            contactList.filter { contact ->
+                contact.name.contains(query, ignoreCase = true)
+            }
+        }
         notifyDataSetChanged()
     }
 }

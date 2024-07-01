@@ -6,11 +6,11 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myapplication.model.repository.MapRepository
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
-import android.util.Log
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -131,7 +131,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         )
 
     }
-}
+}}
 
 
 

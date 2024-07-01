@@ -1,3 +1,5 @@
+package com.example.myapplication.model.viewModel
+
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData

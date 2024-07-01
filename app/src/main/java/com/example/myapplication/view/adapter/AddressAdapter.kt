@@ -16,14 +16,8 @@ class AddressAdapter(
     private val emptyStateTextView: TextView
 ) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
 
-    // SharedPreferences instance
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("address_prefs", Context.MODE_PRIVATE)
-    }
-
-    init {
-        // Load saved addresses from SharedPreferences when adapter is initialized
-        loadAddresses()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
@@ -35,7 +29,7 @@ class AddressAdapter(
         val address = addressList[position]
         holder.bind(address)
 
-        // Set click listener for delete button
+        // 삭제 버튼 클릭 시 다이얼로그 표시
         holder.binding.deleteButton.setOnClickListener {
             showDeleteConfirmationDialog(context, address, position)
         }
@@ -71,14 +65,6 @@ class AddressAdapter(
         val editor = sharedPreferences.edit()
         editor.putStringSet("addresses", addressList.toSet())
         editor.apply()
-    }
-
-    private fun loadAddresses() {
-        val savedAddresses = sharedPreferences.getStringSet("addresses", setOf())
-        addressList.clear()
-        addressList.addAll(savedAddresses ?: emptySet())
-        notifyDataSetChanged()
-        updateEmptyState()
     }
 
     private fun showDeleteConfirmationDialog(context: Context, address: String, position: Int) {

@@ -82,4 +82,62 @@ object MapRepository {
             }
         }
     }
+
+    fun reverseGeocode(
+        context: Context,
+        placeName: String,
+        onSuccess: (String) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        Log.d(TAG, "장소 이름으로 주소 검색 시작 - 장소명: $placeName")
+
+        // 장소 이름을 API에서 지원하는 포맷으로 변환 (여기서는 그대로 사용)
+        val query = URLEncoder.encode(placeName, StandardCharsets.UTF_8.toString())
+
+        // API 호출 URL
+        val apiUrl = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$query"
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                // HTTP 연결 설정
+                val url = URL(apiUrl)
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY-ID", NAVER_MAPS_CLIENT_ID)
+                conn.setRequestProperty("X-NCP-APIGW-API-KEY", NAVER_MAPS_CLIENT_SECRET)
+
+                // 응답 코드 확인
+                if (conn.responseCode == HttpURLConnection.HTTP_OK) {
+                    // 응답 데이터 읽기
+                    val reader = BufferedReader(InputStreamReader(conn.inputStream))
+                    val response = StringBuilder()
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                    reader.close()
+
+                    // JSON 파싱
+                    val jsonObject = JSONObject(response.toString())
+                    val addresses = jsonObject.getJSONArray("addresses")
+                    if (addresses.length() > 0) {
+                        val firstAddress = addresses.getJSONObject(0)
+                        val roadAddress = firstAddress.getString("roadAddress")
+
+                        Log.d(TAG, "주소 정보 파싱 성공 - 도로명 주소: $roadAddress")
+
+                        // 성공 콜백 호출
+                        onSuccess(roadAddress)
+                    } else {
+                        onFailure("주소를 찾을 수 없습니다.")
+                    }
+                } else {
+                    onFailure("네이버 지도 API 호출 실패 - 응답 코드: ${conn.responseCode}")
+                }
+                conn.disconnect()
+            } catch (e: Exception) {
+                onFailure("네트워크 오류: ${e.message}")
+            }
+        }
+    }
 }

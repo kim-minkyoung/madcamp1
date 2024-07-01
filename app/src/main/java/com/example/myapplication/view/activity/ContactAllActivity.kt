@@ -2,10 +2,10 @@ package com.example.myapplication.view.activity
 
 import android.content.ContentValues.TAG
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.Fragment1RecyclerViewBinding
 import com.example.myapplication.model.data.Contact
@@ -15,9 +15,10 @@ import com.example.myapplication.view.adapter.ContactAdapter
 import com.example.myapplication.view.fragment.Tab1Fragment
 
 class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener {
+
     private lateinit var binding: Fragment1RecyclerViewBinding
-    private var contacts: List<Contact> = ContactRepository.getAllContacts()
     private lateinit var adapter: ContactAdapter
+    private var contacts: List<Contact> = ContactRepository.getAllContacts()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,16 +27,31 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
 
         binding.toolbar.visibility = View.GONE
 
+        // RecyclerView 설정
         binding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Adapter 초기화
         adapter = ContactAdapter(this, contacts, null, null) { contact ->
             val intent = Intent(this, ContactDetailActivity::class.java)
             startActivity(intent)
         }
         binding.contactRecyclerView.adapter = adapter
 
+        // 검색 기능 설정
+        val autoCompleteTextView = binding.address
+        val searchButton = binding.submit
+
+        searchButton.setOnClickListener {
+            val query = autoCompleteTextView.text.toString().trim()
+            filterContacts(query)
+        }
+
         binding.buttonAllView.visibility = View.GONE
+    }
+
+    private fun filterContacts(query: String) {
+        val filteredContacts = contacts.filter { contact ->
+            contact.name.contains(query, ignoreCase = true)
+        }
+        adapter.updateData(filteredContacts)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -43,13 +59,11 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
         return true
     }
 
-    // 즐겨찾기 상태 변경 후 Tab1Fragment에 알리기
     override fun onBackPressed() {
         super.onBackPressed()
-        notifyTab1Fragment()
+        onRefreshFavoriteContacts()
     }
 
-    // Tab1Fragment로 즐겨찾기 목록 새로고침 이벤트 전달
     override fun onRefreshFavoriteContacts() {
         val fragmentTag = "tab1_fragment_tag"
         val fragment = supportFragmentManager.findFragmentByTag(fragmentTag) as? Tab1Fragment
@@ -61,9 +75,6 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
         }
     }
 
-
-
-    // Tab1Fragment로 즐겨찾기 목록 새로고침 요청
     private fun notifyTab1Fragment() {
         onRefreshFavoriteContacts()
     }
