@@ -38,8 +38,10 @@ import java.io.IOException
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import java.util.*
+import com.example.myapplication.model.interfaces.SavePlaceListener
+import com.example.myapplication.view.fragment.SavePlaceDialogFragment
 
-class Tab3Fragment : Fragment(), OnMapReadyCallback {
+class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.SavePlaceListener{
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -213,18 +215,42 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
                 latitude, longitude, 1
             ) { addresses ->
                 if (addresses.isNotEmpty()) {
-                    // 주소를 Toast로 표시합니다.
-                    toast(addresses[0].getAddressLine(0))
+                    val address = addresses[0].getAddressLine(0)
+                    // 다이얼로그를 띄워 장소 저장 여부를 물어봅니다.
+                    showSavePlaceDialog(address)
                 }
             }
         } else { // API 레벨 33 미만에서 Geocoder를 사용하는 방법
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
             if (addresses != null && addresses.isNotEmpty()) {
-                // 주소를 Toast로 표시합니다.
-                toast(addresses[0].getAddressLine(0))
+                val address = addresses[0].getAddressLine(0)
+                // 다이얼로그를 띄워 장소 저장 여부를 물어봅니다.
+                showSavePlaceDialog(address)
             }
         }
     }
+
+    private fun showSavePlaceDialog(address: String) {
+        val dialog = SavePlaceDialogFragment.newInstance(null, address)
+        dialog.show(childFragmentManager, "SavePlaceDialog")
+    }
+
+    override fun onSavePlaceClicked(placeName: String?) {
+        // 장소 저장 처리 로직을 여기에 추가합니다.
+        if (placeName != null) {
+            // 저장 로직 예시: ViewModel을 통해 데이터베이스에 저장
+            // viewModel.savePlace(placeName, selectedAddress)
+            toast("장소가 저장되었습니다: $placeName")
+        } else {
+            toast("장소 이름을 입력하세요.")
+        }
+    }
+
+    override fun onCancelClicked() {
+        // 취소 처리 로직을 여기에 추가합니다.
+        toast("장소 저장이 취소되었습니다.")
+    }
+
 
     private fun toast(text: String) {
         requireActivity().runOnUiThread {

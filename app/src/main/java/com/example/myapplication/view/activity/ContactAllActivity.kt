@@ -1,19 +1,16 @@
 package com.example.myapplication.view.activity
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.Fragment1RecyclerViewBinding
 import com.example.myapplication.model.data.Contact
 import com.example.myapplication.model.repository.ContactRepository
-import com.example.myapplication.utils.RefreshFavoriteContactsListener
-import com.example.myapplication.view.activity.ContactDetailActivity
+import com.example.myapplication.model.interfaces.RefreshFavoriteContactsListener
 import com.example.myapplication.view.adapter.ContactAdapter
 import com.example.myapplication.view.fragment.Tab1Fragment
 

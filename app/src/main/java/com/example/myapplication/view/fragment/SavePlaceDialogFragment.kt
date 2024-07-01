@@ -6,17 +6,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.example.myapplication.model.interfaces.SavePlaceListener
 
 class SavePlaceDialogFragment : DialogFragment() {
 
-    private var savePlaceListener: SavePlaceListener? = null
     private var placeName: String? = null
     private var address: String? = null
 
-    interface SavePlaceListener {
-        fun onSavePlaceClicked()
-        fun onCancelClicked()
-    }
+    private lateinit var savePlaceListener: SavePlaceListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -36,18 +33,18 @@ class SavePlaceDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
+        return requireActivity().let {
             val builder = AlertDialog.Builder(it)
             builder.setTitle("저장 여부")
-                .setMessage("이 장소를 나만의 장소로 저장하시겠습니까?")
+                .setMessage("'${address ?: ""}'을(를) 나만의 장소로 저장하시겠어요?")
                 .setPositiveButton("예") { _, _ ->
-                    savePlaceListener?.onSavePlaceClicked()
+                    savePlaceListener?.onSavePlaceClicked(placeName)
                 }
                 .setNegativeButton("아니요") { _, _ ->
                     savePlaceListener?.onCancelClicked()
                 }
             builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
+        }
     }
 
     companion object {
