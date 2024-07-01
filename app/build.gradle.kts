@@ -42,7 +42,6 @@ android {
     }
 
 }
-//tab 2번째에서 갤러리 추가
 dependencies {
     // 네이버 지도 SDK
     implementation("com.naver.maps:map-sdk:3.18.0")
@@ -60,26 +59,31 @@ dependencies {
     implementation(libs.androidx.media3.common)
     annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
-    //viewModelScope 사용 위해 lifecycle 종속성 추가
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-    implementation("com.squareup.okhttp3:okhttp:4.9.2")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
+    // Retrofit 및 OkHttp 관련
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    // 다음과 같이 libs 안에 있는 라이브러리들을 참조하는 경우
+    implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
+
+    // 추가 라이브러리
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation ("androidx.fragment:fragment-ktx:1.3.6")
+    implementation("androidx.fragment:fragment-ktx:1.3.6")
+
     // 테스트 관련 종속성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    //위치 권한 관련
-    implementation ("com.google.android.gms:play-services-location:21.0.1")
-    //자동완성 기능을 위한 종속성
-    implementation ("com.google.android.libraries.places:places:2.4.0")
+
+    // 위치 권한 관련
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // 자동완성 기능을 위한 종속성
+    implementation("com.google.android.libraries.places:places:2.4.0")
 }

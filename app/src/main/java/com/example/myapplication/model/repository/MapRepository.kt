@@ -1,54 +1,67 @@
 package com.example.myapplication.model.repository
 
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
+import android.content.Context
+import android.util.Log
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.net.PlacesClient
 
 object MapRepository {
-    private val client = OkHttpClient()
 
-    fun searchAddress(address: String, onSuccess: (String, Double, Double) -> Unit, onError: (String) -> Unit) {
-        val url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$address"
-
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("X-NCP-APIGW-API-KEY-ID", "w86eyz5x78")
-            .addHeader("X-NCP-APIGW-API-KEY", "yq4vrhypcs")
+    // 장소 이름으로 검색하는 메서드
+    fun searchPlaceByName(
+        context: Context,
+        placesClient: PlacesClient,
+        placeName: String,
+        onSuccess: (String, Double, Double) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        // 요청 생성
+        val request = com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest.builder()
+            .setQuery(placeName)
             .build()
 
-        client.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                e.printStackTrace()
-                onError("검색 실패: ${e.message}")
-            }
+        // API 호출
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+            val predictions = response.autocompletePredictions
+            if (predictions.isNotEmpty()) {
+                val prediction = predictions[0]
+                val placeId = prediction.placeId
 
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                response.body?.string()?.let {
-                    try {
-                        val jsonObject = JSONObject(it)
-                        if (jsonObject.has("addresses")) {
-                            val addresses = jsonObject.getJSONArray("addresses")
-                            if (addresses.length() > 0) {
-                                val firstAddress = addresses.getJSONObject(0)
-                                val roadAddress = firstAddress.getString("roadAddress")
-                                val latitude = firstAddress.getDouble("y")
-                                val longitude = firstAddress.getDouble("x")
-                                onSuccess(roadAddress, latitude, longitude)
-                            } else {
-                                onError("검색 결과가 없습니다.")
-                            }
-                        } else {
-                            onError("주소 정보를 찾을 수 없습니다.")
-                        }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                        onError("검색 결과 파싱 실패")
-                    }
-                } ?: onError("응답 본문이 비어 있습니다.")
+                // 장소 ID를 이용해 장소의 상세 정보를 가져옵니다.
+                fetchPlaceById(context, placesClient, placeId, onSuccess, onFailure)
+            } else {
+                onFailure("해당 이름의 장소를 찾을 수 없습니다.")
             }
-        })
+        }.addOnFailureListener { exception ->
+            Log.e("MapRepository", "Place not found: $exception")
+            onFailure("장소 검색 중 오류가 발생했습니다.")
+        }
+    }
+
+    // 장소 ID로 장소의 위치를 검색하는 메서드
+    private fun fetchPlaceById(
+        context: Context,
+        placesClient: PlacesClient,
+        placeId: String,
+        onSuccess: (String, Double, Double) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val placeFields = listOf(
+            com.google.android.libraries.places.api.model.Place.Field.ID,
+            com.google.android.libraries.places.api.model.Place.Field.NAME,
+            com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
+        )
+
+        val request = com.google.android.libraries.places.api.net.FetchPlaceRequest.builder(placeId, placeFields).build()
+
+        placesClient.fetchPlace(request).addOnSuccessListener { response ->
+            val place = response.place
+            val name = place.name ?: "이름 없음"
+            val latLng = place.latLng ?: LatLng(0.0, 0.0)
+            onSuccess(name, latLng.latitude, latLng.longitude)
+        }.addOnFailureListener { exception ->
+            Log.e("MapRepository", "Place not found: $exception")
+            onFailure("장소 정보를 불러오는 중 오류가 발생했습니다.")
+        }
     }
 }

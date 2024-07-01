@@ -1,28 +1,30 @@
 package com.example.myapplication.model.viewModel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.myapplication.model.repository.MapRepository
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 
-class MapViewModel : ViewModel() {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = MapRepository
+    private val placesClient: PlacesClient = Places.createClient(application)
 
     private val _addressData = MutableLiveData<Triple<String, Double, Double>>()
-    val addressData: LiveData<Triple<String, Double, Double>> get() = _addressData
+    val addressData: LiveData<Triple<String, Double, Double>> = _addressData
 
     private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    val errorMessage: LiveData<String> = _errorMessage
 
-    fun searchAddress(address: String) {
-        repository.searchAddress(
-            address,
-            onSuccess = { roadAddress, latitude, longitude ->
-                _addressData.postValue(Triple(roadAddress, latitude, longitude))
+    fun searchPlaceByName(placeName: String) {
+        MapRepository.searchPlaceByName(getApplication(), placesClient, placeName,
+            onSuccess = { name, latitude, longitude ->
+                _addressData.value = Triple(name, latitude, longitude)
             },
-            onError = { message ->
-                _errorMessage.postValue(message)
+            onFailure = { errorMessage ->
+                _errorMessage.value = errorMessage
             }
         )
     }

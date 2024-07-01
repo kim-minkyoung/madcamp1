@@ -41,7 +41,7 @@ import java.util.*
 import com.example.myapplication.model.interfaces.SavePlaceListener
 import com.example.myapplication.view.fragment.SavePlaceDialogFragment
 
-class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.SavePlaceListener{
+class Tab3Fragment : Fragment(), OnMapReadyCallback{
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -92,7 +92,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.Sav
 
         // Places API 초기화
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), "YOUR_API_KEY")  // TODO: 실제 API 키로 교체
+            Places.initialize(requireContext(), "w86eyz5x78")  // TODO: 실제 API 키로 교체
         }
         placesClient = Places.createClient(requireContext())
 
@@ -115,7 +115,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.Sav
             val address = binding.address.text.toString()
             if (address.isNotEmpty()) {
                 // ViewModel을 통해 주소 검색을 요청합니다.
-                viewModel.searchAddress(address)
+                viewModel.searchPlaceByName(address)
             } else {
                 Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
@@ -217,7 +217,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.Sav
                 if (addresses.isNotEmpty()) {
                     val address = addresses[0].getAddressLine(0)
                     // 다이얼로그를 띄워 장소 저장 여부를 물어봅니다.
-                    showSavePlaceDialog(address)
+//                    showSavePlaceDialog(address)
                 }
             }
         } else { // API 레벨 33 미만에서 Geocoder를 사용하는 방법
@@ -225,7 +225,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.Sav
             if (addresses != null && addresses.isNotEmpty()) {
                 val address = addresses[0].getAddressLine(0)
                 // 다이얼로그를 띄워 장소 저장 여부를 물어봅니다.
-                showSavePlaceDialog(address)
+//                showSavePlaceDialog(address)
             }
         }
     }
@@ -235,21 +235,21 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback, SavePlaceDialogFragment.Sav
         dialog.show(childFragmentManager, "SavePlaceDialog")
     }
 
-    override fun onSavePlaceClicked(placeName: String?) {
-        // 장소 저장 처리 로직을 여기에 추가합니다.
-        if (placeName != null) {
-            // 저장 로직 예시: ViewModel을 통해 데이터베이스에 저장
-            // viewModel.savePlace(placeName, selectedAddress)
-            toast("장소가 저장되었습니다: $placeName")
-        } else {
-            toast("장소 이름을 입력하세요.")
-        }
-    }
-
-    override fun onCancelClicked() {
-        // 취소 처리 로직을 여기에 추가합니다.
-        toast("장소 저장이 취소되었습니다.")
-    }
+//    override fun onSavePlaceClicked(placeName: String?) {
+//        // 장소 저장 처리 로직을 여기에 추가합니다.
+//        if (placeName != null) {
+//            // 저장 로직 예시: ViewModel을 통해 데이터베이스에 저장
+//            // viewModel.savePlace(placeName, selectedAddress)
+//            toast("장소가 저장되었습니다: $placeName")
+//        } else {
+//            toast("장소 이름을 입력하세요.")
+//        }
+//    }
+//
+//    override fun onCancelClicked() {
+//        // 취소 처리 로직을 여기에 추가합니다.
+//        toast("장소 저장이 취소되었습니다.")
+//    }
 
 
     private fun toast(text: String) {
