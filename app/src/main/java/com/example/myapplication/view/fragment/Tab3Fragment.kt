@@ -116,7 +116,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // RecyclerView 초기화
         binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        addressAdapter = AddressAdapter(mutableListOf(), _binding!!.emptyStateText)
+        addressAdapter = AddressAdapter(requireContext(), mutableListOf(), _binding!!.emptyStateText)
         binding.addressRecyclerView.adapter = addressAdapter
         updateEmptyState()
     }
