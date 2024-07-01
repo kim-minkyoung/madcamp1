@@ -76,3 +76,83 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<layout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools">-->
+
+<!--    <data>-->
+<!--        &lt;!&ndash; ViewModel and other data binding references &ndash;&gt;-->
+<!--    </data>-->
+
+<!--    <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        tools:context=".view.fragment.Tab3Fragment">-->
+
+<!--        <com.naver.maps.map.MapView-->
+<!--            android:id="@+id/map_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+
+<!--        &lt;!&ndash; Persistent Bottom Sheet &ndash;&gt;-->
+<!--        &lt;!&ndash; Persistent Bottom Sheet &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:id="@+id/persistent_bottom_sheet"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="250dp"-->
+<!--            android:background="#ebebeb"-->
+<!--            android:orientation="vertical"-->
+<!--            android:padding="16dp"-->
+<!--            app:behavior_hideable="false"-->
+<!--            app:behavior_peekHeight="100dp"-->
+<!--            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">-->
+
+<!--            &lt;!&ndash; Bottom Sheet content &ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:text="내가 즐겨 가는 장소"-->
+<!--                android:textSize="24sp" />-->
+
+<!--            &lt;!&ndash; RecyclerView to display addresses &ndash;&gt;-->
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/address_recycler_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:paddingTop="8dp"-->
+<!--                android:paddingBottom="8dp" />-->
+
+<!--        </LinearLayout>-->
+
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="16dp"-->
+<!--            android:gravity="top">-->
+
+<!--            &lt;!&ndash; AutoCompleteTextView &ndash;&gt;-->
+<!--            <AutoCompleteTextView-->
+<!--                android:id="@+id/address"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:hint="주소 입력"-->
+<!--                android:maxLines="1"-->
+<!--                android:singleLine="true"-->
+<!--                android:imeOptions="actionSearch"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/submit"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="검색" />-->
+<!--        </LinearLayout>-->
+
+<!--    </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+<!--</layout>-->
