@@ -22,7 +22,7 @@
             android:value="w86eyz5x78" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_SECRET"
-            android:value="nmEan0D5ehqjDZvMfVuC8xfry11vU4ilsBOYUeiY"/>
+            android:value="09NHCAmjUFBTKHMuGiXvO4oY3CRYALgN5ywWfk8S"/>
         <activity
             android:name=".view.activity.MainActivity"
             android:exported="true">

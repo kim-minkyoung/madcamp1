@@ -19,13 +19,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val errorMessage: LiveData<String> = _errorMessage
 
     fun searchPlaceByName(placeName: String) {
-        MapRepository.searchPlaceByName(getApplication(), placesClient, placeName,
+        MapRepository.searchPlaceByName(
+            getApplication(),
+            placeName,
+            placesClient,
             onSuccess = { name, latitude, longitude ->
-                _addressData.value = Triple(name, latitude, longitude)
-            },
-            onFailure = { errorMessage ->
-                _errorMessage.value = errorMessage
+                _addressData.postValue(Triple(name, latitude, longitude))
             }
-        )
+        ) { errorMessage ->
+            _errorMessage.postValue(errorMessage)
+        }
     }
 }

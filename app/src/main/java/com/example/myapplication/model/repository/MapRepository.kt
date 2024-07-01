@@ -1,67 +1,81 @@
 package com.example.myapplication.model.repository
 
 import android.content.Context
-import android.util.Log
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.PlacesClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 object MapRepository {
+
+    private const val NAVER_MAPS_CLIENT_ID = "w86eyz5x78" // 네이버 지도 API 클라이언트 ID
+    private const val NAVER_MAPS_CLIENT_SECRET = "09NHCAmjUFBTKHMuGiXvO4oY3CRYALgN5ywWfk8S" // 네이버 지도 API 클라이언트 시크릿
 
     // 장소 이름으로 검색하는 메서드
     fun searchPlaceByName(
         context: Context,
-        placesClient: PlacesClient,
         placeName: String,
-        onSuccess: (String, Double, Double) -> Unit,
-        onFailure: (String) -> Unit
-    ) {
-        // 요청 생성
-        val request = com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest.builder()
-            .setQuery(placeName)
-            .build()
-
-        // API 호출
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
-            val predictions = response.autocompletePredictions
-            if (predictions.isNotEmpty()) {
-                val prediction = predictions[0]
-                val placeId = prediction.placeId
-
-                // 장소 ID를 이용해 장소의 상세 정보를 가져옵니다.
-                fetchPlaceById(context, placesClient, placeId, onSuccess, onFailure)
-            } else {
-                onFailure("해당 이름의 장소를 찾을 수 없습니다.")
-            }
-        }.addOnFailureListener { exception ->
-            Log.e("MapRepository", "Place not found: $exception")
-            onFailure("장소 검색 중 오류가 발생했습니다.")
-        }
-    }
-
-    // 장소 ID로 장소의 위치를 검색하는 메서드
-    private fun fetchPlaceById(
-        context: Context,
         placesClient: PlacesClient,
-        placeId: String,
         onSuccess: (String, Double, Double) -> Unit,
         onFailure: (String) -> Unit
     ) {
-        val placeFields = listOf(
-            com.google.android.libraries.places.api.model.Place.Field.ID,
-            com.google.android.libraries.places.api.model.Place.Field.NAME,
-            com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
-        )
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val encodedQuery = URLEncoder.encode(placeName, StandardCharsets.UTF_8.toString())
+                val apiUrl = "https://naveropenapi.apigw.ntruss.com/map-place/v1/search?query=$encodedQuery"
 
-        val request = com.google.android.libraries.places.api.net.FetchPlaceRequest.builder(placeId, placeFields).build()
+                val url = URL(apiUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("X-NCP-APIGW-API-KEY-ID", NAVER_MAPS_CLIENT_ID)
+                connection.setRequestProperty("X-NCP-APIGW-API-KEY", NAVER_MAPS_CLIENT_SECRET)
 
-        placesClient.fetchPlace(request).addOnSuccessListener { response ->
-            val place = response.place
-            val name = place.name ?: "이름 없음"
-            val latLng = place.latLng ?: LatLng(0.0, 0.0)
-            onSuccess(name, latLng.latitude, latLng.longitude)
-        }.addOnFailureListener { exception ->
-            Log.e("MapRepository", "Place not found: $exception")
-            onFailure("장소 정보를 불러오는 중 오류가 발생했습니다.")
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = StringBuilder()
+                    var inputLine: String?
+
+                    while (reader.readLine().also { inputLine = it } != null) {
+                        response.append(inputLine)
+                    }
+                    reader.close()
+
+                    val json = JSONObject(response.toString())
+                    val items = json.getJSONArray("places")
+                    if (items.length() > 0) {
+                        val item = items.getJSONObject(0)
+                        val name = item.getString("name")
+                        val latitude = item.getDouble("y")
+                        val longitude = item.getDouble("x")
+
+                        // Update UI thread with LiveData
+                        launch(Dispatchers.Main) {
+                            onSuccess(name, latitude, longitude)
+                        }
+                    } else {
+                        launch(Dispatchers.Main) {
+                            onFailure("No place found")
+                        }
+                    }
+                } else {
+                    launch(Dispatchers.Main) {
+                        onFailure("HTTP Error: $responseCode")
+                    }
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+                launch(Dispatchers.Main) {
+                    onFailure(e.message ?: "Unknown error")
+                }
+            }
         }
     }
 }

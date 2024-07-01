@@ -83,6 +83,7 @@ dependencies {
 
     // 위치 권한 관련
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("io.github.fornewid:naver-map-location:21.0.2")
 
     // 자동완성 기능을 위한 종속성
     implementation("com.google.android.libraries.places:places:2.4.0")

@@ -35,8 +35,7 @@ class SavePlaceDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return requireActivity().let {
             val builder = AlertDialog.Builder(it)
-            builder.setTitle("저장 여부")
-                .setMessage("'${address ?: ""}'을(를) 나만의 장소로 저장하시겠어요?")
+            builder.setMessage("'${address ?: ""}'을(를) 나만의 장소로 저장하시겠어요?")
                 .setPositiveButton("예") { _, _ ->
                     Log.d("SavePlaceDialogFragment", "Save button clicked")
                     savePlaceListener.onSavePlaceClicked(address)
@@ -48,6 +47,7 @@ class SavePlaceDialogFragment : DialogFragment() {
             builder.create()
         }
     }
+
 
     companion object {
         private const val ARG_PLACE_NAME = "placeName"

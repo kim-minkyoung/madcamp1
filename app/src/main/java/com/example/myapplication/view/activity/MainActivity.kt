@@ -100,13 +100,13 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
             val tab3Fragment = supportFragmentManager.findFragmentByTag("f2") as? Tab3Fragment
             tab3Fragment?.updateBottomSheet(it, tab3Fragment.marker.position.latitude, tab3Fragment.marker.position.longitude)
             // 토스트 메시지를 보여줌
-            Toast.makeText(this, "Place saved: $address", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "장소가 저장 됐어요: $address", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onCancelClicked() {
         // 취소 로직을 처리
-        Toast.makeText(this, "Place saving cancelled", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "장소 저장이 취소 됐어요", Toast.LENGTH_SHORT).show()
     }
 }
 

@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
 import com.example.myapplication.model.viewModel.MapViewModel
@@ -33,6 +35,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import java.util.*
 import com.naver.maps.map.overlay.Marker
 import com.example.myapplication.model.interfaces.SavePlaceListener
+import com.example.myapplication.view.adapter.AddressAdapter
 import com.example.myapplication.view.fragment.SavePlaceDialogFragment
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
@@ -52,6 +55,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private var placesClient: PlacesClient? = null
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
+    private lateinit var addressAdapter: AddressAdapter
     val marker = Marker()
 
     private val viewModel: MapViewModel by viewModels()
@@ -115,6 +119,11 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         viewModel.errorMessage.observe(viewLifecycleOwner, { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         })
+
+        // RecyclerView 초기화
+        binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        addressAdapter = AddressAdapter(mutableListOf()) // 초기화할 때 빈 리스트를 전달
+        binding.addressRecyclerView.adapter = addressAdapter
     }
 
     private fun fetchAutocompletePredictions(query: String) {
@@ -155,12 +164,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     }
 
     fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
-        binding.persistentBottomSheet.findViewById<TextView>(R.id.address_text_view).text = address
-        binding.persistentBottomSheet.findViewById<TextView>(R.id.latitude_text_view).text =
-            "위도: $latitude"
-        binding.persistentBottomSheet.findViewById<TextView>(R.id.longitude_text_view).text =
-            "경도: $longitude"
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        addressAdapter.addAddress(address)
     }
 
     private fun moveCameraToLocation(latitude: Double, longitude: Double) {
@@ -210,6 +214,33 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             Log.e(TAG, "Geocoder failed", e)
         }
     }
+
+//    private fun getPlaceName(latitude: Double, longitude: Double) {
+//        val naverMapClient = NaverMapSdk.getInstance(requireContext()).mapClient
+//
+//        val coordinate = LatLng(latitude, longitude)
+//        val request = ReverseGeocodeRequest(coordinate)
+//
+//        naverMapClient.reverseGeocode(request, object : ReverseGeocodeInterface {
+//            override fun onSuccess(response: ReverseGeocodeResponse) {
+//                if (response.results.isNotEmpty()) {
+//                    val address = response.results.first().name ?: response.results.first().localName
+//                    if (!address.isNullOrBlank()) {
+//                        Log.d(TAG, "Place name found: $address")
+//                        showSavePlaceDialog(address)
+//                    } else {
+//                        Log.d(TAG, "No recognizable place name found")
+//                    }
+//                } else {
+//                    Log.d(TAG, "No address found")
+//                }
+//            }
+//
+//            override fun onError(e: NaverMapSdkException) {
+//                Log.e(TAG, "Naver Map API request failed", e)
+//            }
+//        })
+//    }
 
     private fun showSavePlaceDialog(address: String) {
         val dialog = SavePlaceDialogFragment.newInstance(null, address)

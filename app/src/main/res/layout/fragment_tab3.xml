@@ -18,6 +18,7 @@
             android:layout_height="match_parent" />
 
         <!-- Persistent Bottom Sheet -->
+        <!-- Persistent Bottom Sheet -->
         <LinearLayout
             android:id="@+id/persistent_bottom_sheet"
             android:layout_width="match_parent"
@@ -37,33 +38,16 @@
                 android:text="내가 즐겨 가는 장소"
                 android:textSize="24sp" />
 
-            <TextView
-                android:id="@+id/address_text_view"
+            <!-- RecyclerView to display addresses -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/address_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="주소"
-                android:textSize="18sp"
-                android:paddingTop="8dp" />
-
-            <TextView
-                android:id="@+id/latitude_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="위도"
-                android:textSize="18sp"
                 android:paddingTop="8dp"
-                android:gravity="center"/>
+                android:paddingBottom="8dp" />
 
-            <TextView
-                android:id="@+id/longitude_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="경도"
-                android:textSize="18sp"
-                android:paddingTop="8dp"
-                android:gravity="center"/>
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
