@@ -5,17 +5,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import android.util.Log  // Log 클래스 임포트
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentTab3Binding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.LocationTrackingMode
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 
 class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
@@ -29,6 +45,9 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var placesClient: PlacesClient
+    private lateinit var autoCompleteAdapter: ArrayAdapter<String>
+    private lateinit var autoCompleteTextView: AutoCompleteTextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +76,53 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // BottomSheetBehavior 초기화
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
+
+        // Places API 초기화
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), "YOUR_API_KEY")  // 실제 API 키로 교체
+        }
+        placesClient = Places.createClient(requireContext())
+
+        // AutoCompleteTextView 설정
+        autoCompleteTextView = binding.address as AutoCompleteTextView
+        autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
+        autoCompleteTextView.setAdapter(autoCompleteAdapter)
+
+        autoCompleteTextView.setOnKeyListener { _, _, _ ->
+            val query = autoCompleteTextView.text.toString()
+            if (query.isNotEmpty()) {
+                fetchAutocompletePredictions(query)
+            }
+            false
+        }
+
+        // Set search button click listener
+        binding.submit.setOnClickListener {
+            val address = binding.address.text.toString()
+            if (address.isNotEmpty()) {
+                searchAddress(address)
+            } else {
+                Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun fetchAutocompletePredictions(query: String) {
+        val token = AutocompleteSessionToken.newInstance()
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .setSessionToken(token)
+            .build()
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+            val predictions = response.autocompletePredictions
+            val suggestionList = predictions.map { it.getFullText(null).toString() }
+            autoCompleteAdapter.clear()
+            autoCompleteAdapter.addAll(suggestionList)
+            autoCompleteAdapter.notifyDataSetChanged()
+        }.addOnFailureListener { exception ->
+            exception.printStackTrace()
+        }
     }
 
     private val locationPermissionRequest = registerForActivityResult(
@@ -74,6 +140,81 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             requireActivity().finish()
         }
         }
+    }
+
+    private fun searchAddress(address: String) {
+        val client = OkHttpClient()
+        val url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$address"
+
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("X-NCP-APIGW-API-KEY-ID", "w86eyz5x78")
+            .addHeader("X-NCP-APIGW-API-KEY", "yq4vrhypcs")
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                e.printStackTrace()
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "검색 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                response.body?.string()?.let {
+                    Log.d("API Response", it) // 응답 로그 출력
+                    try {
+                        val jsonObject = JSONObject(it)
+                        // "addresses" 필드가 있는지 확인
+                        if (jsonObject.has("addresses")) {
+                            val addresses = jsonObject.getJSONArray("addresses")
+                            // "addresses" 배열에 결과가 있는지 확인
+                            if (addresses.length() > 0) {
+                                val firstAddress = addresses.getJSONObject(0)
+                                val roadAddress = firstAddress.getString("roadAddress")
+                                val latitude = firstAddress.getDouble("y")
+                                val longitude = firstAddress.getDouble("x")
+
+                                requireActivity().runOnUiThread {
+                                    updateBottomSheet(roadAddress, latitude, longitude)
+                                    moveCameraToLocation(latitude, longitude)
+                                }
+                            } else {
+                                // 검색 결과가 없을 때
+                                requireActivity().runOnUiThread {
+                                    Toast.makeText(requireContext(), "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } else {
+                            // "addresses" 필드가 없을 때
+                            requireActivity().runOnUiThread {
+                                Toast.makeText(requireContext(), "주소 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } catch (e: JSONException) {
+                        // JSON 파싱 실패 시
+                        e.printStackTrace()
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), "검색 결과 파싱 실패", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
+        binding.persistentBottomSheet.findViewById<TextView>(R.id.address_text_view).text = address
+        binding.persistentBottomSheet.findViewById<TextView>(R.id.latitude_text_view).text =
+            "위도: $latitude"
+        binding.persistentBottomSheet.findViewById<TextView>(R.id.longitude_text_view).text =
+            "경도: $longitude"
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private fun moveCameraToLocation(latitude: Double, longitude: Double) {
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude, longitude))
+        naverMap.moveCamera(cameraUpdate)
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -120,100 +261,3 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     }
 }
 
-
-
-//위치 함수 추가 전 코드
-//package com.example.myapplication.view.fragment
-//
-//import android.os.Bundle
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import androidx.databinding.DataBindingUtil.setContentView
-//import androidx.fragment.app.Fragment
-//import com.example.myapplication.R
-//import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-//import com.example.myapplication.databinding.FragmentTab3Binding
-//import com.google.android.material.bottomsheet.BottomSheetBehavior
-//import com.naver.maps.map.MapView
-//import com.naver.maps.map.NaverMap
-//import com.naver.maps.map.OnMapReadyCallback
-//import com.naver.maps.map.util.FusedLocationSource
-//
-//class Tab3Fragment : Fragment(), OnMapReadyCallback {
-//
-//
-//
-//    private var _binding: FragmentTab3Binding? = null
-//    private val binding get() = _binding!!
-//    private lateinit var mapView: MapView
-//    private lateinit var naverMap: NaverMap
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        _binding = FragmentTab3Binding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//
-//
-//        mapView = binding.mapView
-//        mapView.onCreate(savedInstanceState)
-//        mapView.getMapAsync(this)
-//
-//
-//    }
-//
-//
-//
-//
-//    override fun onMapReady(naverMap: NaverMap) {
-//        this.naverMap = naverMap
-//        // NaverMap 객체가 준비되었을 때 실행할 작업들을 여기에 추가합니다.
-//        // 예를 들어, 맵 설정, 마커 추가, 이벤트 핸들러 등을 초기화합니다.
-//
-//        // naverMap locationSource 에 FusedLocationSource 적용
-//
-//
-//    }
-//
-//    override fun onStart() {
-//        super.onStart()
-//        mapView.onStart()
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        mapView.onResume()
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        mapView.onPause()
-//    }
-//
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        mapView.onSaveInstanceState(outState)
-//    }
-//
-//    override fun onStop() {
-//        super.onStop()
-//        mapView.onStop()
-//    }
-//
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        _binding = null
-//        mapView.onDestroy()
-//    }
-//
-//    override fun onLowMemory() {
-//        super.onLowMemory()
-//        mapView.onLowMemory()
-//    }
-//}

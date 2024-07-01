@@ -56,11 +56,16 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("com.github.bumptech.glide:glide:4.11.0")
+    implementation(libs.play.services.places)
+    implementation(libs.androidx.media3.common)
     annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
     //viewModelScope 사용 위해 lifecycle 종속성 추가
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     // 다음과 같이 libs 안에 있는 라이브러리들을 참조하는 경우
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.core.ktx)
@@ -75,4 +80,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     //위치 권한 관련
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    //자동완성 기능을 위한 종속성
+    implementation ("com.google.android.libraries.places:places:2.4.0")
 }

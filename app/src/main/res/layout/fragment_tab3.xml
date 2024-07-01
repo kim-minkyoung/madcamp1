@@ -38,12 +38,53 @@
                 android:textSize="24sp" />
 
             <TextView
+                android:id="@+id/address_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Persistent Bottom Sheet"
-                android:textSize="24sp"
-                android:paddingTop="100dp"
+                android:gravity="center"
+                android:text="주소"
+                android:textSize="18sp"
+                android:paddingTop="8dp" />
+
+            <TextView
+                android:id="@+id/latitude_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="위도"
+                android:textSize="18sp"
+                android:paddingTop="8dp"
                 android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/longitude_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="경도"
+                android:textSize="18sp"
+                android:paddingTop="8dp"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="top">
+
+            <!-- AutoCompleteTextView로 변경 -->
+            <AutoCompleteTextView
+                android:id="@+id/address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="주소 입력" />
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색" />
         </LinearLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -51,7 +92,7 @@
 
 
 
-<!--위치함수 추가 전 코드-->
+
     <!--<?xml version="1.0" encoding="utf-8"?>-->
 <!--<layout xmlns:android="http://schemas.android.com/apk/res/android"-->
 <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
@@ -92,14 +133,53 @@
 <!--                android:textSize="24sp" />-->
 
 <!--            <TextView-->
+<!--                android:id="@+id/address_text_view"-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
-<!--                android:text="Persistent Bottom Sheet"-->
-<!--                android:textSize="24sp"-->
-<!--                android:paddingTop="100dp"-->
+<!--                android:gravity="center"-->
+<!--                android:text="주소"-->
+<!--                android:textSize="18sp"-->
+<!--                android:paddingTop="8dp" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/latitude_text_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="위도"-->
+<!--                android:textSize="18sp"-->
+<!--                android:paddingTop="8dp"-->
 <!--                android:gravity="center"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/longitude_text_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="경도"-->
+<!--                android:textSize="18sp"-->
+<!--                android:paddingTop="8dp"-->
+<!--                android:gravity="center"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="16dp"-->
+<!--            android:gravity="top">-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/address"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:hint="주소 입력" />-->
+
+<!--            <Button-->
+<!--                android:id="@+id/submit"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="검색" />-->
 <!--        </LinearLayout>-->
 
 <!--    </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 <!--</layout>-->
-
