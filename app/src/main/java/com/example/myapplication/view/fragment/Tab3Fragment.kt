@@ -52,7 +52,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private var placesClient: PlacesClient? = null
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
-    private val marker = Marker()
+    val marker = Marker()
 
     private val viewModel: MapViewModel by viewModels()
 
@@ -154,7 +154,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
+    fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
         binding.persistentBottomSheet.findViewById<TextView>(R.id.address_text_view).text = address
         binding.persistentBottomSheet.findViewById<TextView>(R.id.latitude_text_view).text =
             "위도: $latitude"
