@@ -1,5 +1,3 @@
-
-
 package com.example.myapplication.model.viewModel
 
 import android.app.Application
@@ -22,7 +20,7 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
         loadAllContacts()
     }
 
-    fun loadAllContacts() {
+    private fun loadAllContacts() {
         viewModelScope.launch {
             if (contactRepository.contacts.isEmpty()) {
                 // 최초 한 번만 데이터 로드

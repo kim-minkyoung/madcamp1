@@ -124,7 +124,7 @@ class Tab1Fragment : Fragment() {
         }
 
         // Adapter 초기화 및 설정
-        contactAdapter = ContactAdapter(requireContext(), filteredContacts, viewLifecycleOwner, contactViewModel) { contact ->
+        contactAdapter = ContactAdapter(requireContext(), filteredContacts, viewLifecycleOwner, contactViewModel, true) { contact ->
             // 클릭 이벤트 처리
             val intent = Intent(requireContext(), ContactDetailActivity::class.java)
             startActivity(intent)
@@ -170,12 +170,14 @@ class Tab1Fragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        observeFavoriteContacts("")
+//        observeFavoriteContacts("")
+        refreshFavoriteContacts()
         Log.d(TAG, "onStart() called")
     }
 
     override fun onResume() {
         super.onResume()
+        refreshFavoriteContacts()
         Log.d(TAG, "onResume() called")
     }
 
