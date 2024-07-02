@@ -1,3 +1,5 @@
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.view.LayoutInflater
@@ -7,8 +9,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
+import com.example.myapplication.view.activity.ImageDetailActivity
 
-class ImageAdapter(private val images: MutableList<Uri>, private val sharedPreferences: SharedPreferences) :
+class ImageAdapter(private val images: MutableList<Uri>, private val sharedPreferences: SharedPreferences,private val context: Context // Context를 추가합니다.
+) :
     RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     var isSelectMode = false
@@ -36,6 +40,11 @@ class ImageAdapter(private val images: MutableList<Uri>, private val sharedPrefe
         holder.image.setOnClickListener {
             if (isSelectMode) {
                 toggleSelection(uri, holder)
+            } else {
+                // 이미지를 클릭하면 ImageDetailActivity를 시작합니다.
+                val intent = Intent(context, ImageDetailActivity::class.java)
+                intent.putExtra("image_uri", uri)
+                context.startActivity(intent)
             }
         }
 

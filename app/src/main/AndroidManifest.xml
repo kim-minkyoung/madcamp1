@@ -18,7 +18,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
 
-        //api key와 api key id 부분
+
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="w86eyz5x78" />
@@ -36,6 +36,7 @@
         </activity>
         <activity android:name=".view.activity.ContactDetailActivity"/>
         <activity android:name=".view.activity.ContactAllActivity" />
+        <activity android:name=".view.activity.ImageDetailActivity" />
 
     </application>
 </manifest>
