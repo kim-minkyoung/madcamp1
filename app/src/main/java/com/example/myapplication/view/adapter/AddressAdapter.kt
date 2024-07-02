@@ -51,12 +51,21 @@ class AddressAdapter(
         updateEmptyState()
     }
 
-    private fun deleteAddress(position: Int) {
-        addressList.removeAt(position)
-        saveAddresses()
-        notifyItemRemoved(position)
-        updateEmptyState()
+    fun deleteAddress(position: Int) {
+        if (addressList.isNotEmpty()) {
+            if (addressList.size == 1) {
+                // 마지막 주소를 삭제하는 경우
+                addressList.removeAt(position)
+                notifyItemRemoved(position)
+            } else {
+                // 중간 주소를 삭제하는 경우
+                addressList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, addressList.size)
+            }
+        }
     }
+
 
     private fun updateEmptyState() {
         if (addressList.isEmpty()) {
