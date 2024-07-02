@@ -13,12 +13,15 @@ import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
+// MainActivity 클래스는 AppCompatActivity를 상속받아 앱의 메인 화면을 관리합니다.
 class MainActivity : AppCompatActivity(), SavePlaceListener {
     private lateinit var binding: ActivityMainBinding
 
+    // onCreate 메서드는 액티비티가 생성될 때 호출됩니다.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // View Binding을 사용하여 XML 레이아웃 파일을 인플레이트합니다.
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -27,7 +30,7 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         binding.viewPager.adapter = TabPagerAdapter(this)
         binding.viewPager.isUserInputEnabled = false
 
-        // TabLayout과 ViewPager2 연결
+        // TabLayout과 ViewPager2를 연결합니다.
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 0 -> tab.text = "전화번호부"
@@ -36,10 +39,10 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
             }
         }.attach()
 
-        // 초기 설명 설정
+        // 초기 설명을 설정합니다.
         updateDescription(0)
 
-        // 탭 선택 리스너 추가
+        // 탭 선택 리스너를 추가합니다.
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 updateDescription(tab.position)
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         })
     }
 
+    // 선택된 탭에 따라 설명을 업데이트하는 메서드입니다.
     private fun updateDescription(position: Int) {
         val descriptions = arrayOf(
             "/자주 연락하는 사람들의 전화번호",
@@ -69,9 +73,11 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         }
     }
 
+    // TabPagerAdapter 클래스는 ViewPager2를 위한 어댑터입니다.
     private inner class TabPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
         override fun getItemCount(): Int = 3
 
+        // 선택된 포지션에 따라 적절한 프래그먼트를 반환합니다.
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> Tab1Fragment()
@@ -82,18 +88,18 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         }
     }
 
+    // SavePlaceListener 인터페이스의 onSavePlaceClicked 메서드 구현입니다.
     override fun onSavePlaceClicked(address: String?) {
         address?.let {
+            // Tab3Fragment를 찾아서 장소를 저장합니다.
             val tab3Fragment = supportFragmentManager.fragments.find { it is Tab3Fragment } as? Tab3Fragment
             tab3Fragment?.updateBottomSheet(it, tab3Fragment.marker.position.latitude, tab3Fragment.marker.position.longitude)
             Toast.makeText(this, "장소가 저장 됐어요: $address", Toast.LENGTH_SHORT).show()
         }
     }
 
+    // SavePlaceListener 인터페이스의 onCancelClicked 메서드 구현입니다.
     override fun onCancelClicked() {
         Toast.makeText(this, "장소 저장이 취소 됐어요", Toast.LENGTH_SHORT).show()
     }
 }
-
-
-

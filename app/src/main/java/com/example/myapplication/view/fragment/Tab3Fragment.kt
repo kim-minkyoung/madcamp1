@@ -232,9 +232,12 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     }
 }
 
+
+
 //package com.example.myapplication.view.fragment
 //
 //import android.Manifest
+//import android.app.AlertDialog
 //import android.os.Bundle
 //import android.util.Log
 //import android.view.LayoutInflater
@@ -311,7 +314,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //        bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
 //
 //        if (!Places.isInitialized()) {
-//            Places.initialize(requireContext(), "w86eyz5x78")
+//            Places.initialize(requireContext(), "YOUR_GOOGLE_API_KEY")
 //        }
 //        placesClient = Places.createClient(requireContext())
 //
@@ -407,6 +410,24 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //            marker.position = LatLng(coord.latitude, coord.longitude)
 //            marker.map = naverMap
 //            viewModel.reverseGeocode(coord.latitude, coord.longitude)
+//            showAddPlaceDialog(marker.position.latitude, marker.position.longitude)
+//        }
+//    }
+//
+//    private fun showAddPlaceDialog(latitude: Double, longitude: Double) {
+//        val address = viewModel.addressData.value?.first ?: ""
+//        if (address.isNotEmpty()) {
+//            AlertDialog.Builder(requireContext())
+//                .setTitle("장소 추가")
+//                .setMessage("이 장소를 추가하시겠습니까?\n$address")
+//                .setPositiveButton("네") { _, _ ->
+//                    updateBottomSheet(address, latitude, longitude)
+//                    Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+//                }
+//                .setNegativeButton("아니요", null)
+//                .show()
+//        } else {
+//            Toast.makeText(requireContext(), "주소를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
 //        }
 //    }
 //
@@ -445,3 +466,5 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //        super.onLowMemory()
 //        mapView.onLowMemory()
 //    }
+//}
+//
