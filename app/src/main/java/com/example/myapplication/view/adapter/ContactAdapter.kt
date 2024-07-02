@@ -56,7 +56,7 @@ class ContactAdapter(
             }
             binding.starView.setOnClickListener {
                 val action = if (contact.isFavorite == true) "삭제" else "추가"
-                val message = "즐겨찾기를 $action 하시겠어요?\n실제 전화번호부에도 즐겨찾기 변경 사항이 반영돼요."
+                val message = "즐겨찾기를 $action 하시겠어요?\n실제 전화번호부에도 즐겨찾기 변경 사항이 반영 돼요."
 
                 val builder = AlertDialog.Builder(context)
                 builder.setMessage(message)
@@ -75,9 +75,9 @@ class ContactAdapter(
                             contactList = ContactRepository.getAllContacts()
                             filterContacts("")
                             Log.d(TAG, "모두 보기 화면")
-
                         }
                         Toast.makeText(context, "즐겨찾기 $action 되었습니다.", Toast.LENGTH_SHORT).show()
+                        notifyDataSetChanged()
                     }
                     .setNegativeButton("아니요") { dialog, id ->
                         dialog.dismiss()

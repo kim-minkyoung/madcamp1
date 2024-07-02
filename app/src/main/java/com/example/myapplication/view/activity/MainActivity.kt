@@ -4,6 +4,7 @@ import Tab2Fragment
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myapplication.databinding.ActivityMainBinding
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
     // onCreate 메서드는 액티비티가 생성될 때 호출됩니다.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 다크모드 비활성화
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         // View Binding을 사용하여 XML 레이아웃 파일을 인플레이트합니다.
         binding = ActivityMainBinding.inflate(layoutInflater)
