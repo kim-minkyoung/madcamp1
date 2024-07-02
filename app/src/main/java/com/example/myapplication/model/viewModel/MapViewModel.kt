@@ -1,5 +1,6 @@
 package com.example.myapplication.model.viewModel
 import android.app.Application
+import android.location.Geocoder
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
     private var isGeocoding = false
+
+    private val _selectedAddress = MutableLiveData<String>()
+    val selectedAddress: LiveData<String>
+        get() = _selectedAddress
+
+    private val _navigateToAddress = MutableLiveData<Pair<Double, Double>>()
+    val navigateToAddress: LiveData<Pair<Double, Double>>
+        get() = _navigateToAddress
     fun searchPlaceByName(query: String) {
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -105,5 +114,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         })
+    }
+
+    fun onAddressClicked(address: String) {
+        //todo
     }
 }

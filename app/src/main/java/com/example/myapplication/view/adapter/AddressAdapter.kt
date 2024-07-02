@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemAddressBinding
+import com.example.myapplication.model.viewModel.MapViewModel
 
 class AddressAdapter(
     private val context: Context,
     private val addressList: MutableList<String>,
-    private val emptyStateTextView: TextView
+    private val emptyStateTextView: TextView,
+    private val viewModel: MapViewModel
 ) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
 
     // SharedPreferences instance
@@ -34,7 +36,9 @@ class AddressAdapter(
         val address = addressList[position]
         holder.bind(address)
 
-        // Set click listener for delete button
+        holder.binding.addressTextView.setOnClickListener {
+            viewModel.onAddressClicked(address)
+        }
         holder.binding.deleteButton.setOnClickListener {
             showDeleteConfirmationDialog(context, address, position)
         }
