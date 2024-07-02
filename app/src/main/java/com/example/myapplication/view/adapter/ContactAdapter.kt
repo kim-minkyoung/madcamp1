@@ -2,6 +2,7 @@ package com.example.myapplication.view.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -69,6 +70,7 @@ class ContactAdapter(
                 val alert = builder.create()
                 alert.show()
             }
+            binding.starView.setShadowLayer(10f, 5f, 5f, Color.GRAY);
         }
     }
 

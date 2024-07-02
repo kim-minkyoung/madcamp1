@@ -14,11 +14,12 @@ import com.example.myapplication.model.interfaces.RefreshFavoriteContactsListene
 import com.example.myapplication.view.adapter.ContactAdapter
 import com.example.myapplication.view.fragment.Tab1Fragment
 
-class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener {
+class ContactAllActivity : AppCompatActivity() {
 
     private lateinit var binding: Fragment1RecyclerViewBinding
     private lateinit var adapter: ContactAdapter
     private var contacts: List<Contact> = ContactRepository.getAllContacts()
+    private var tab1Fragment: Tab1Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,8 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
         }
 
         binding.buttonAllView.visibility = View.GONE
+
+        tab1Fragment = supportFragmentManager.findFragmentByTag("tab1_fragment_tag") as? Tab1Fragment
     }
 
     private fun filterContacts(query: String) {
@@ -61,21 +64,10 @@ class ContactAllActivity : AppCompatActivity(), RefreshFavoriteContactsListener 
 
     override fun onBackPressed() {
         super.onBackPressed()
-        onRefreshFavoriteContacts()
-    }
-
-    override fun onRefreshFavoriteContacts() {
-        val fragmentTag = "tab1_fragment_tag"
-        val fragment = supportFragmentManager.findFragmentByTag(fragmentTag) as? Tab1Fragment
-        if (fragment != null && fragment.isAdded) {
-            Log.d(TAG, "Calling refreshFavoriteContacts()")
-            fragment.refreshFavoriteContacts()
-        } else {
-            Log.d(TAG, "Fragment with tag $fragmentTag not found or not added")
-        }
+        notifyTab1Fragment()
     }
 
     private fun notifyTab1Fragment() {
-        onRefreshFavoriteContacts()
+        tab1Fragment?.refreshFavoriteContacts()
     }
 }

@@ -150,8 +150,7 @@ class Tab1Fragment : Fragment() {
 
     // 외부에서 호출하여 즐겨찾기 목록을 다시 로드하는 함수
     fun refreshFavoriteContacts() {
-        Log.d(TAG, "refreshFavoriteContacts() called")
-        Toast.makeText(requireContext(), "refreshFavoriteContacts.", Toast.LENGTH_SHORT).show()
+        observeFavoriteContacts("")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
