@@ -1,3 +1,6 @@
+
+
+
 package com.example.myapplication.view.adapter
 
 import android.content.ContentValues.TAG

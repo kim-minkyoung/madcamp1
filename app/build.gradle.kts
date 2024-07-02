@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.play.services.places)
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.filament.android)
+    implementation(libs.androidx.ui.graphics.android)
     annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
     // Retrofit 및 OkHttp 관련
