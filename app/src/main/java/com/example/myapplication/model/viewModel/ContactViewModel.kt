@@ -38,4 +38,10 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
             favoriteContacts.value = contactRepository.getFavoriteContacts()
         }
     }
+
+    fun loadFavoriteContacts() {
+        viewModelScope.launch {
+            favoriteContacts.value = contactRepository.getFavoriteContacts()
+        }
+    }
 }

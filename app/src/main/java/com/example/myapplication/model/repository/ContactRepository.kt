@@ -117,12 +117,14 @@ object ContactRepository {
         val rowsUpdated = context.contentResolver.update(updateUri, values, selection, selectionArgs)
         if (rowsUpdated > 0) {
             contact.isFavorite = newFavoriteStatus == 1
-            if (contact.isFavorite == true) {
-                contactsFavorite.add(contact)
-            } else {
-                contactsFavorite.remove(contact)
-            }
+            // contactsFavorite 리스트를 재로드
+            reloadFavoriteContacts()
         }
+    }
+
+    fun reloadFavoriteContacts() {
+        contactsFavorite.clear()
+        contactsFavorite.addAll(contacts.filter { it.isFavorite == true })
     }
 
     // 전화번호부에서 연락처 ID를 가져오는 함수

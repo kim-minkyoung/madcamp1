@@ -72,6 +72,12 @@ class ContactAllActivity : AppCompatActivity() {
     }
 
     private fun notifyTab1Fragment() {
+        val tab1Fragment = supportFragmentManager.findFragmentByTag("tab1_fragment_tag") as? Tab1Fragment
         tab1Fragment?.refreshFavoriteContacts()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        notifyTab1Fragment()
     }
 }

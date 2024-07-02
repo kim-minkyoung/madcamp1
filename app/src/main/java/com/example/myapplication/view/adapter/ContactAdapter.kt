@@ -1,6 +1,3 @@
-
-
-
 package com.example.myapplication.view.adapter
 
 import android.content.ContentValues.TAG
@@ -44,11 +41,6 @@ class ContactAdapter(
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(contact: Contact) {
-            if (isTab1Fragment && contact.isFavorite != true) {
-                itemView.visibility = View.GONE  // 해당 아이템 숨기기
-                return
-            }
-
             binding.nameView.text = contact.name
             binding.numberView.text = contact.phoneNumber
             binding.starView.text = if (contact.isFavorite == true) "★" else "☆"
@@ -118,18 +110,12 @@ class ContactAdapter(
     }
 
     private fun filterContacts(query: String) {
-        // 필터링 조건 설정
-        val filterCondition: (Contact) -> Boolean = { contact ->
+        // 필터링 조건에 맞는 아이템만 남기기
+        filteredContacts = contactList.filter { contact ->
             val matchesQuery = contact.name.contains(query, ignoreCase = true)
             val matchesFavorite = if (isTab1Fragment) contact.isFavorite else true
             matchesQuery && matchesFavorite == true
         }
-
-        // 필터링 조건에 따라 리스트 필터링
-        filteredContacts = contactList.filter(filterCondition)
-
-        // 데이터 변경 알림
         notifyDataSetChanged()
     }
-
 }

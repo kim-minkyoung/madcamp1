@@ -155,7 +155,7 @@ class Tab1Fragment : Fragment() {
 
     // 외부에서 호출하여 즐겨찾기 목록을 다시 로드하는 함수
     fun refreshFavoriteContacts() {
-        observeFavoriteContacts("")
+        contactViewModel.loadFavoriteContacts()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
