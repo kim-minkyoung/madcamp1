@@ -174,28 +174,26 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             marker.position = LatLng(coord.latitude, coord.longitude)
             marker.map = naverMap
             viewModel.reverseGeocode(coord.latitude, coord.longitude)
-            showAddPlaceDialog(marker.position.latitude, marker.position.longitude)
         }
-    }
 
-    private fun showAddPlaceDialog(latitude: Double, longitude: Double) {
         viewModel.specificAddressData.observe(viewLifecycleOwner) { specificValue ->
             if (specificValue.isNotEmpty()) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("장소 추가")
-                    .setMessage("이 장소를 추가하시겠습니까?\n$specificValue")
-                    .setPositiveButton("네") { _, _ ->
-                        updateBottomSheet(specificValue, latitude, longitude)
-                        Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
-                    }
-                    .setNegativeButton("아니요", null)
-                    .show()
-            } else {
-                Toast.makeText(requireContext(), "주소를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                showAddPlaceDialog(specificValue, marker.position.latitude, marker.position.longitude)
             }
         }
     }
 
+    private fun showAddPlaceDialog(address: String, latitude: Double, longitude: Double) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("장소 추가")
+            .setMessage("이 장소를 추가하시겠습니까?\n$address")
+            .setPositiveButton("네") { _, _ ->
+                updateBottomSheet(address, latitude, longitude)
+                Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("아니요", null)
+            .show()
+    }
 
     override fun onStart() {
         super.onStart()
@@ -233,8 +231,6 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         mapView.onLowMemory()
     }
 }
-
-
 
 //package com.example.myapplication.view.fragment
 //
@@ -341,15 +337,15 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //            }
 //        }
 //
-//        viewModel.addressData.observe(viewLifecycleOwner, { data ->
+//        viewModel.addressData.observe(viewLifecycleOwner) { data ->
 //            val (roadAddress, latitude, longitude) = data
 //            updateBottomSheet(roadAddress, latitude, longitude)
 //            moveCameraToLocation(latitude, longitude)
-//        })
+//        }
 //
-//        viewModel.errorMessage.observe(viewLifecycleOwner, { message ->
+//        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
 //            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-//        })
+//        }
 //
 //        // RecyclerView 초기화
 //        binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -417,21 +413,23 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //    }
 //
 //    private fun showAddPlaceDialog(latitude: Double, longitude: Double) {
-//        val address = viewModel.addressData.value?.first ?: ""
-//        if (address.isNotEmpty()) {
-//            AlertDialog.Builder(requireContext())
-//                .setTitle("장소 추가")
-//                .setMessage("이 장소를 추가하시겠습니까?\n$address")
-//                .setPositiveButton("네") { _, _ ->
-//                    updateBottomSheet(address, latitude, longitude)
-//                    Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
-//                }
-//                .setNegativeButton("아니요", null)
-//                .show()
-//        } else {
-//            Toast.makeText(requireContext(), "주소를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+//        viewModel.specificAddressData.observe(viewLifecycleOwner) { specificValue ->
+//            if (specificValue.isNotEmpty()) {
+//                AlertDialog.Builder(requireContext())
+//                    .setTitle("장소 추가")
+//                    .setMessage("이 장소를 추가하시겠습니까?\n$specificValue")
+//                    .setPositiveButton("네") { _, _ ->
+//                        updateBottomSheet(specificValue, latitude, longitude)
+//                        Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+//                    }
+//                    .setNegativeButton("아니요", null)
+//                    .show()
+//            } else {
+//                Toast.makeText(requireContext(), "주소를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+//            }
 //        }
 //    }
+//
 //
 //    override fun onStart() {
 //        super.onStart()
@@ -469,4 +467,5 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 //        mapView.onLowMemory()
 //    }
 //}
+//
 //
