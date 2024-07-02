@@ -4,13 +4,14 @@ import android.location.Geocoder
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myapplication.model.data.Address
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-    private val _addressData = MutableLiveData<Triple<String, Double, Double>>()
-    val addressData: LiveData<Triple<String, Double, Double>> = _addressData
+    private val _addressData = MutableLiveData<Address>()
+    val addressData: LiveData<Address> = _addressData
     private val _specificValue = MutableLiveData<String>()
     val specificAddressData: LiveData<String> = _specificValue
     private val _errorMessage = MutableLiveData<String>()
@@ -49,8 +50,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                                 val landName = addressObject.optString("landName", "")
                                 // landName이 query와 일치하는지 확인
                                 if (landName.contains(query, true)) {
-                                    _addressData.postValue(Triple(roadAddress, y, x))
                                     _specificValue.postValue(landName)
+                                    _addressData.postValue(Address(landName, roadAddress, y, x))
                                     return
                                 }
                             }
@@ -97,8 +98,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                                 val land = result.getJSONObject("land")
                                 val addition0 = land.optJSONObject("addition0")
                                 val specificValue = addition0?.optString("value", "No value found") ?: "No value found"
-                                _addressData.postValue(Triple(fullAddress, lat, lng))
                                 _specificValue.postValue(specificValue)  // Post specific value to live data
+                                _addressData.postValue(Address(specificValue, fullAddress, lat, lng))
                             }
                         } else {
                             _errorMessage.postValue("No address found")
@@ -116,7 +117,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    fun onAddressClicked(address: String) {
+    fun onAddressClicked(address: Address) {
         //todo
     }
 }

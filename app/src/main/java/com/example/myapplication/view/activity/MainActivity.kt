@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.model.data.Address
 import com.example.myapplication.model.interfaces.SavePlaceListener
 import com.example.myapplication.view.fragment.Tab1Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
@@ -97,7 +98,7 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         address?.let {
             // Tab3Fragment를 찾아서 장소를 저장합니다.
             val tab3Fragment = supportFragmentManager.fragments.find { it is Tab3Fragment } as? Tab3Fragment
-            tab3Fragment?.updateBottomSheet(it, tab3Fragment.marker.position.latitude, tab3Fragment.marker.position.longitude)
+            tab3Fragment?.updateBottomSheet(Address(null, it, tab3Fragment.marker.position.latitude, tab3Fragment.marker.position.longitude))
             Toast.makeText(this, "장소가 저장 됐어요: $address", Toast.LENGTH_SHORT).show()
         }
     }

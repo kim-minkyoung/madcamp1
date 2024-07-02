@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.databinding.FragmentTab3Binding
+import com.example.myapplication.model.data.Address
 import com.example.myapplication.model.viewModel.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
@@ -105,18 +106,20 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         viewModel.addressData.observe(viewLifecycleOwner) { data ->
             val (roadAddress, latitude, longitude) = data
-            moveCameraToLocation(latitude, longitude)
+            moveCameraToLocation(data.latitude, data.longitude)
             if (!viewModel.specificAddressData.value.isNullOrEmpty()) {
                 // specificAddressData가 이미 있다면 showAddPlaceDialog를 호출하지 않음
                 return@observe
             }
-            showAddPlaceDialog(null, roadAddress, latitude, longitude)
+            showAddPlaceDialog(Address(null, data.roadAddress, data.latitude, data.longitude))
         }
 
         viewModel.specificAddressData.observe(viewLifecycleOwner) { specificValue ->
-            if (specificValue.isNotEmpty()) {
-                val (roadAddress, latitude, longitude) = viewModel.addressData.value!!
-                showAddPlaceDialog(specificValue, roadAddress, latitude, longitude)
+            viewModel.addressData.value?.let { data ->
+                if (specificValue.isNotEmpty()) {
+                    val address = Address(specificValue, data.roadAddress, data.latitude, data.longitude)
+                    showAddPlaceDialog(address)
+                }
             }
         }
 
@@ -174,7 +177,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    fun updateBottomSheet(address: String, latitude: Double, longitude: Double) {
+    fun updateBottomSheet(address: Address) {
         addressAdapter.addAddress(address)
     }
 
@@ -197,18 +200,17 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
     private var dialogShown = false
 
-    private fun showAddPlaceDialog(specificAddress: String?, roadAddress: String, latitude: Double, longitude: Double) {
+    private fun showAddPlaceDialog(address: Address) {
         if (dialogShown) return
         dialogShown = true
 
-        val bottomSheetAddress = specificAddress ?: roadAddress
-        val message = "이 ${if (specificAddress != null) "상호명" else "도로명"}을 추가하시겠습니까?\n$bottomSheetAddress"
+        val message = "이 ${if (address.specificAddress != null) "상호명" else "도로명"}을 추가하시겠습니까?\n${address.specificAddress ?: address.roadAddress}"
 
         AlertDialog.Builder(requireContext())
             .setTitle("장소 추가")
             .setMessage(message)
             .setPositiveButton("네") { _, _ ->
-                updateBottomSheet(bottomSheetAddress, latitude, longitude)
+                updateBottomSheet(address)
                 Toast.makeText(requireContext(), "장소가 추가되었습니다.", Toast.LENGTH_SHORT).show()
                 dialogShown = false
             }
@@ -220,6 +222,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             }
             .show()
     }
+
 
     override fun onStart() {
         super.onStart()

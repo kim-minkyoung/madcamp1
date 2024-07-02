@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemAddressBinding
+import com.example.myapplication.model.data.Address
 import com.example.myapplication.model.viewModel.MapViewModel
 
 class AddressAdapter(
     private val context: Context,
-    private val addressList: MutableList<String>,
+    private val addressList: MutableList<Address>,
     private val emptyStateTextView: TextView,
     private val viewModel: MapViewModel
 ) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
@@ -48,7 +49,7 @@ class AddressAdapter(
         return addressList.size
     }
 
-    fun addAddress(address: String) {
+    fun addAddress(address: Address) {
         addressList.add(address)
         saveAddresses()
         notifyDataSetChanged()
@@ -80,21 +81,35 @@ class AddressAdapter(
 
     private fun saveAddresses() {
         val editor = sharedPreferences.edit()
-        editor.putStringSet("addresses", addressList.toSet())
+        val addressStrings = addressList.map { address ->
+            "${address.specificAddress ?: ""}|${address.roadAddress}|${address.latitude}|${address.longitude}"
+        }
+        editor.putStringSet("addresses", addressStrings.toSet())
         editor.apply()
     }
 
     private fun loadAddresses() {
         val savedAddresses = sharedPreferences.getStringSet("addresses", setOf())
         addressList.clear()
-        addressList.addAll(savedAddresses ?: emptySet())
+        savedAddresses?.forEach { addressString ->
+            val parts = addressString.split('|')
+            if (parts.size == 4) {
+                val specificAddress = if (parts[0].isNotEmpty()) parts[0] else null
+                val roadAddress = parts[1]
+                val latitude = parts[2].toDoubleOrNull()
+                val longitude = parts[3].toDoubleOrNull()
+                if (latitude != null && longitude != null) {
+                    addressList.add(Address(specificAddress, roadAddress, latitude, longitude))
+                }
+            }
+        }
         notifyDataSetChanged()
         updateEmptyState()
     }
 
-    private fun showDeleteConfirmationDialog(context: Context, address: String, position: Int) {
+    private fun showDeleteConfirmationDialog(context: Context, address: Address, position: Int) {
         AlertDialog.Builder(context)
-            .setMessage("\"$address\"을(를) 내 저장소에서 정말로 삭제하시겠어요?")
+            .setMessage("\"${address.specificAddress ?: address.roadAddress}\"을(를) 내 저장소에서 정말로 삭제하시겠어요?")
             .setPositiveButton("예") { dialog, which ->
                 deleteAddress(position)
             }
@@ -104,8 +119,8 @@ class AddressAdapter(
 
     class AddressViewHolder(val binding: ItemAddressBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(address: String) {
-            binding.address = address
+        fun bind(address: Address) {
+            binding.address = address.specificAddress ?: address.roadAddress
             binding.executePendingBindings()
         }
     }
