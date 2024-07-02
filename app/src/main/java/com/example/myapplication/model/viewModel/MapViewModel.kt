@@ -14,6 +14,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val _addressData = MutableLiveData<Triple<String, Double, Double>>()
     val addressData: LiveData<Triple<String, Double, Double>> = _addressData
 
+    private val _specificValue = MutableLiveData<String>()
+    val specificAddressData = _specificValue
+
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
@@ -74,10 +77,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
                         val jsonObject = JSONObject(it.string())
                         val results = jsonObject.getJSONArray("results")
                         if (results.length() > 0) {
-                            val addressObject = results.getJSONObject(0).getJSONObject("region")
-                            val roadAddress = results.getJSONObject(0).getJSONObject("land").getString("name")
-                            val fullAddress = "${addressObject.getJSONObject("area1").getString("name")} ${addressObject.getJSONObject("area2").getString("name")} ${addressObject.getJSONObject("area3").getString("name")} $roadAddress"
-                            _addressData.postValue(Triple(fullAddress, lat, lng))
+                            for (i in 0 until results.length()) {
+                                val result = results.getJSONObject(i)
+                                val region = result.getJSONObject("region")
+                                val roadAddress = result.getJSONObject("land").getString("name")
+                                val fullAddress = "${region.getJSONObject("area1").getString("name")} ${region.getJSONObject("area2").getString("name")} ${region.getJSONObject("area3").getString("name")} $roadAddress"
+
+                                // Extract the specific "value" field from "addition0" under "land"
+                                val land = result.getJSONObject("land")
+                                val addition0 = land.optJSONObject("addition0")
+                                val specificValue = addition0?.optString("value", "No value found") ?: "No value found"
+
+                                _addressData.postValue(Triple(fullAddress, lat, lng))
+                                _specificValue.postValue(specificValue)  // Post specific value to live data
+                            }
                         } else {
                             _errorMessage.postValue("No address found")
                         }
@@ -90,6 +103,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             }
         })
     }
+
 }
 
 
