@@ -126,6 +126,7 @@ class Tab1Fragment : Fragment() {
             startActivity(intent)
         }
         recyclerView.adapter = contactAdapter
+        contactAdapter.notifyDataSetChanged()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -171,7 +172,6 @@ class Tab1Fragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        observeFavoriteContacts("")
         Log.d(TAG, "onResume() called")
     }
 

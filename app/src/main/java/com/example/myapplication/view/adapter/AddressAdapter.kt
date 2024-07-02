@@ -66,7 +66,6 @@ class AddressAdapter(
         }
     }
 
-
     private fun updateEmptyState() {
         if (addressList.isEmpty()) {
             emptyStateTextView.visibility = TextView.VISIBLE

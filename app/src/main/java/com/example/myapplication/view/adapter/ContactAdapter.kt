@@ -1,13 +1,16 @@
 package com.example.myapplication.view.adapter
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
@@ -16,6 +19,7 @@ import com.example.myapplication.databinding.ContactListBinding
 import com.example.myapplication.model.repository.ContactRepository
 import com.example.myapplication.model.viewModel.ContactViewModel
 import com.example.myapplication.view.activity.ContactDetailActivity
+import com.example.myapplication.view.fragment.Tab1Fragment
 
 class ContactAdapter(
     private val context: Context,
@@ -29,6 +33,8 @@ class ContactAdapter(
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     private var filteredContacts: List<Contact> = contactList
+    private var favoriteContacts: MutableLiveData<List<Contact>> =
+        contactViewModel?.favoriteContacts ?: MutableLiveData(emptyList())
 
     inner class ViewHolder(private val binding: ContactListBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -47,7 +53,7 @@ class ContactAdapter(
             }
             binding.starView.setOnClickListener {
                 val action = if (contact.isFavorite == true) "삭제" else "추가"
-                val message = "즐겨찾기를 $action 하시겠습니까?\n실제 전화번호부에도 즐겨찾기 변경 사항이 반영됩니다."
+                val message = "즐겨찾기를 $action 하시겠어요?\n실제 전화번호부에도 즐겨찾기 변경 사항이 반영돼요."
 
                 val builder = AlertDialog.Builder(context)
                 builder.setMessage(message)
@@ -55,11 +61,18 @@ class ContactAdapter(
                     .setPositiveButton("예") { dialog, id ->
                         if (contactViewModel != null) {
                             contactViewModel.toggleFavoriteStatus(contact)
+                            favoriteContacts.value = ContactRepository.getFavoriteContacts()
+                            contactList = ContactRepository.getFavoriteContacts()
+                            filterContacts("")
+                            Log.d(TAG, "즐겨찾기만 보기 화면")
                         } else {
                             ContactRepository.toggleFavoriteStatus(context, contact)
                             // UI 업데이트를 위해 데이터 변경 후 전체 데이터 다시 불러오기
+                            favoriteContacts.value = ContactRepository.getFavoriteContacts()
                             contactList = ContactRepository.getAllContacts()
                             filterContacts("")
+                            Log.d(TAG, "모두 보기 화면")
+
                         }
                         Toast.makeText(context, "즐겨찾기 $action 되었습니다.", Toast.LENGTH_SHORT).show()
                     }
@@ -91,6 +104,7 @@ class ContactAdapter(
     fun updateData(newContacts: List<Contact>) {
         contactList = newContacts
         filterContacts("")
+        notifyDataSetChanged()
     }
 
     private fun filterContacts(query: String) {
