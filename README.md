@@ -85,7 +85,8 @@
 
 마커 추가 / 장소 삭제
 
-![Tab3_장소추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/5ca57c5a-b48c-4cee-a9bd-c8f71022afaa)
+
+![Tab3_장소추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/5e4b5214-fa06-42cb-a83d-cd8d07cd8bac)
 ![Tab3_저장장소 검색](https://github.com/kim-minkyoung/madcamp1/assets/105150339/3f9b5ecc-4348-478e-abd6-7902beea4e4c)
 
 장소 추가 / 저장 장소 검색
