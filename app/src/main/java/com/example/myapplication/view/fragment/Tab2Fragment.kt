@@ -2,6 +2,7 @@ package com.example.myapplication.view.fragment
 
 import ImageAdapter
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -76,6 +77,7 @@ class Tab2Fragment : Fragment() {
             pickImageLauncher.launch(intent)
         }
 
+        // 선택 모드/삭제 모드 토글 버튼 클릭 리스너 설정
         // 선택 모드/삭제 모드 토글 버튼 클릭 리스너 설정
         binding.selectDeleteButton.setOnClickListener {
             if (isSelectMode) {

@@ -104,5 +104,9 @@
                 android:textSize="14sp"
                 android:visibility="gone" />
         </LinearLayout>
+
+        <!-- Search Bar Layout -->
+        
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

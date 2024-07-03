@@ -26,7 +26,7 @@
             android:name="com.naver.maps.map.CLIENT_SECRET"
             android:value="09NHCAmjUFBTKHMuGiXvO4oY3CRYALgN5ywWfk8S"/>
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name=".view.activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,6 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.MainActivity" />
         <activity android:name=".view.activity.ContactDetailActivity"/>
         <activity android:name=".view.activity.ContactAllActivity" />
         <activity android:name=".view.activity.ImageDetailActivity" />

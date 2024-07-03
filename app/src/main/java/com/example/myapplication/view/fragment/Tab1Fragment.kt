@@ -124,11 +124,7 @@ class Tab1Fragment : Fragment() {
         }
 
         // Adapter 초기화 및 설정
-        contactAdapter = ContactAdapter(requireContext(), filteredContacts, viewLifecycleOwner, contactViewModel, true) { contact ->
-            // 클릭 이벤트 처리
-            val intent = Intent(requireContext(), ContactDetailActivity::class.java)
-            startActivity(intent)
-        }
+        contactAdapter = ContactAdapter(requireContext(), filteredContacts, viewLifecycleOwner, contactViewModel, true)
         recyclerView.adapter = contactAdapter
         contactAdapter.notifyDataSetChanged()
     }
