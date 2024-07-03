@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="16sp"
-                android:hint="주소를 입력해보세요"
+                android:hint="저장하고 싶은 장소를 입력하세요"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:imeOptions="actionSearch"/>
