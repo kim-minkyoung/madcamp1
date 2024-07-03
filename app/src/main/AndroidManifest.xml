@@ -18,19 +18,22 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
 
-
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="w86eyz5x78" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_SECRET"
             android:value="09NHCAmjUFBTKHMuGiXvO4oY3CRYALgN5ywWfk8S"/>
+        <!-- 네이버 지도 SDK 클라이언트 ID 추가 -->
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="w86eyz5x78" />
+
         <activity
             android:name=".view.activity.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,5 +44,3 @@
 
     </application>
 </manifest>
-
-

@@ -15,6 +15,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+
         mavenCentral()
         jcenter()
         maven("https://repository.map.naver.com/archive/maven")
@@ -23,5 +24,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "My Application"
-//include(":app", ":library")
 include(":app")

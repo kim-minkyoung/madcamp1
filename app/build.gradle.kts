@@ -20,6 +20,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        dataBinding = true
     }
 
     defaultConfig {
@@ -52,40 +53,42 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    //viewBinding 활성화
+
     viewBinding {
         enable = true
     }
-    buildFeatures {
-        dataBinding = true
-        buildConfig = true
-    }
-
 }
+
 dependencies {
-    // 네이버 지도 SDK
-    implementation("com.naver.maps:map-sdk:3.18.0")
+    // Android Support Libraries
     implementation("com.android.support:animated-vector-drawable:28.0.0")
     implementation("com.android.support:support-media-compat:28.0.0")
 
-    // 카카오 지도 SDK
+    // Naver Map SDK
+    implementation("com.naver.maps:map-sdk:3.18.0")
+    implementation("com.naver.maps:map-sdk:3.16.2")
+
+    // Kakao Map SDK
     implementation("com.kakao.maps.open:android:2.9.5")
 
+    // Google Material Design
     implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("com.squareup.picasso:picasso:2.71828") // 이미지 로딩을 위한 라이브러리
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    // AndroidX Libraries
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    implementation("androidx.fragment:fragment-ktx:1.3.6")
+
+    // Other Libraries
+    implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.github.bumptech.glide:glide:4.11.0")
-    implementation(libs.play.services.places)
-    implementation(libs.androidx.media3.common)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.filament.android)
-    implementation(libs.androidx.ui.graphics.android)
     annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
 
-    // Retrofit 및 OkHttp 관련
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+
+    // Retrofit and OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
@@ -93,28 +96,28 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.2")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
 
-    // 추가 라이브러리
+    // Google Play Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.libraries.places:places:2.4.0")
+
+    // Naver Map Location
+    implementation("io.github.fornewid:naver-map-location:21.0.2")
+
+    // Other AndroidX Libraries
+    implementation(libs.play.services.places)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.filament.android)
+    implementation(libs.androidx.ui.graphics.android)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("androidx.fragment:fragment-ktx:1.3.6")
 
-    // 테스트 관련 종속성
+    // Testing Libraries
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // 위치 권한 관련
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("io.github.fornewid:naver-map-location:21.0.2")
-
-    // 자동완성 기능을 위한 종속성
-    implementation("com.google.android.libraries.places:places:2.4.0")
-
-    //geocode
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 }
