@@ -56,11 +56,39 @@
 ### Preview
 **시작 화면**
 
+![스플레시](https://github.com/kim-minkyoung/madcamp1/assets/105150339/ec128c2a-5596-4cb7-8756-e4a9acd90433)
+
+
 📞 **전화번호부**
+
+![Tab1_즐겨찾기 삭제](https://github.com/kim-minkyoung/madcamp1/assets/105150339/22127b96-a4c9-437d-8c8e-7746094f5d25)
+![Tab1_연락처추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/4650a817-661d-428f-beae-8c0d2fa8a044)
+![Tab1_연락처검색](https://github.com/kim-minkyoung/madcamp1/assets/105150339/51fad625-2ca7-4d80-b5ea-099d01b6abb6)
+
+즐겨찾기 삭제 / 연락처 추가 / 연락처 검색
+
+
 
 📷 **사진**
 
+![Tab2_사진삭제](https://github.com/kim-minkyoung/madcamp1/assets/105150339/7ba74b38-fc2f-44b8-b109-a1ccdfc1457b)
+![Tab2_사진추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/07fd4da7-8a25-4cbf-a506-645ce8b3d8a9)
+![Tab2_이미지확대](https://github.com/kim-minkyoung/madcamp1/assets/105150339/b9d72240-7472-4d08-a8cc-5b41b738904f)
+
+사진 삭제 / 사진 추가 / 이미지 확대
+
+
 🏢 **장소**
+
+![Tab3_마커추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/4d942398-a21d-48b7-b112-1dd745483617)
+![Tab3_장소삭제](https://github.com/kim-minkyoung/madcamp1/assets/105150339/d30326b4-623a-4b78-a29e-50abeb2d4ad3)
+
+마커 추가 / 장소 삭제
+
+![Tab3_장소추가](https://github.com/kim-minkyoung/madcamp1/assets/105150339/5ca57c5a-b48c-4cee-a9bd-c8f71022afaa)
+![Tab3_저장장소 검색](https://github.com/kim-minkyoung/madcamp1/assets/105150339/3f9b5ecc-4348-478e-abd6-7902beea4e4c)
+
+장소 추가 / 저장 장소 검색
 
 ---
 
