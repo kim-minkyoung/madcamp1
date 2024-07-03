@@ -4,9 +4,14 @@ import android.location.Geocoder
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.myapplication.BuildConfig
 import com.example.myapplication.model.data.Address
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
@@ -29,55 +34,53 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         get() = _navigateToAddress
     fun searchPlaceByName(query: String) {
         val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=$query")
-            .addHeader("X-NCP-APIGW-API-KEY-ID", "w86eyz5x78")
-            .addHeader("X-NCP-APIGW-API-KEY", "09NHCAmjUFBTKHMuGiXvO4oY3CRYALgN5ywWfk8S")
+        val kakaoApiKey = BuildConfig.kakao_rest_key
+
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host("dapi.kakao.com")
+            .addPathSegments("/v2/local/search/keyword.json")
+            .addQueryParameter("query", query)
             .build()
 
-        client.newCall(request).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: okhttp3.Call, e: IOException) {
-                _errorMessage.postValue("Failed to get address")
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "KakaoAK $kakaoApiKey")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                _errorMessage.postValue("주소를 가져오는 데 실패했습니다.")
             }
 
-            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+            override fun onResponse(call: Call, response: Response) {
                 response.body?.let {
                     try {
                         val jsonObject = JSONObject(it.string())
-                        val addresses = jsonObject.getJSONArray("addresses")
+                        val documents = jsonObject.getJSONArray("documents")
 
-                        if (addresses.length() > 0) {
-                            for (i in 0 until addresses.length()) {
-                                val addressObject = addresses.getJSONObject(i)
-                                val roadAddress = addressObject.getString("roadAddress")
-                                val x = addressObject.getDouble("x")
-                                val y = addressObject.getDouble("y")
-                                val landName = addressObject.optString("landName", "")
+                        if (documents.length() > 0) {
+                            val firstDocument = documents.getJSONObject(0)
+                            val placeName = firstDocument.getString("place_name")
+                            val roadAddressName = firstDocument.optString("road_address_name", "")
+                            val x = firstDocument.getDouble("x")
+                            val y = firstDocument.getDouble("y")
 
-                                // landName이 query와 일치하는지 확인
-//                                if (landName.contains(query, true)) {
-//                                    // landName이 일치하는 경우에만 값을 post
-//                                    _specificValue.postValue(landName)
-//                                    _addressData.postValue(Address(landName, roadAddress, y, x))
-//                                    return
-//                                } else {
-//                                    _addressData.postValue(Address(null, roadAddress, y, x))
-//                                }
-                                _addressData.postValue(Address(null, roadAddress, y, x))
-                            }
-//                            _errorMessage.postValue("No matching address found")
+                            _specificValue.postValue(placeName)
+                            _addressData.postValue(Address(placeName, roadAddressName, y, x))
                         } else {
-                            _errorMessage.postValue("No address found")
+                            _errorMessage.postValue("해당 장소를 찾을 수 없습니다.")
                         }
                     } catch (e: Exception) {
-                        _errorMessage.postValue("Failed to parse response")
+                        _errorMessage.postValue("응답을 분석하는 데 실패했습니다.")
                     }
                 } ?: run {
-                    _errorMessage.postValue("Response body is null")
+                    _errorMessage.postValue("응답 본문이 비어 있습니다.")
                 }
             }
         })
     }
+
 
     fun reverseGeocode(lat: Double, lng: Double) {
         if (isGeocoding) return  // Prevent multiple simultaneous requests

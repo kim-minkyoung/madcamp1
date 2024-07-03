@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.myapplication.BuildConfig
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.model.data.Address
 import com.example.myapplication.model.interfaces.SavePlaceListener
@@ -18,6 +19,7 @@ import com.example.myapplication.view.fragment.Tab2Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.kakao.vectormap.KakaoMapSdk
 
 // MainActivity 클래스는 AppCompatActivity를 상속받아 앱의 메인 화면을 관리합니다.
 class MainActivity : AppCompatActivity(), SavePlaceListener {
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
                 2 -> tab.text = "장소"
             }
         }.attach()
+
+        //Tab3 카카오
+        KakaoMapSdk.init(this, BuildConfig.kakao_native_key);
 
         // 초기 설명을 설정합니다.
         updateDescription(0)

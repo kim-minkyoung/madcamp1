@@ -32,3 +32,5 @@ replay_pid*
 .gradle/8.4/fileHashes/resourceHashesCache.bin
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
 .gradle/buildOutputCleanup/outputFiles.bin
+
+.gradle/build/local.properties
