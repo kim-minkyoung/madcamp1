@@ -1,6 +1,10 @@
 package com.example.myapplication.view.activity
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -30,6 +34,13 @@ class MainActivity : AppCompatActivity(), SavePlaceListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        // "최애" 글자만 두껍게
+        val subtitleText = " - 내 최애들만 따로 모아보자!"
+        val spannable = SpannableString(subtitleText)
+        spannable.setSpan(StyleSpan(Typeface.BOLD), 4, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        binding.textSubtitle.text = spannable
 
         // ViewPager2 초기화 및 설정
         binding.viewPager.adapter = TabPagerAdapter(this)

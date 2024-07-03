@@ -60,13 +60,13 @@
             android:padding="16dp"
             android:gravity="top">
 
-            <!-- AutoCompleteTextView -->
             <AutoCompleteTextView
                 android:id="@+id/address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="주소 입력"
+                android:textSize="16sp"
+                android:hint="주소를 검색해서 저장해보세요"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:imeOptions="actionSearch"/>
@@ -75,8 +75,14 @@
             <Button
                 android:id="@+id/submit"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="저장" />
+                android:layout_height="42dp"
+                android:text="저장"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintHeight_percent="0.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/address" />
 
         </LinearLayout>
 
