@@ -8,6 +8,16 @@
     android:layout_height="match_parent"
     tools:context=".view.activity.MainActivity">
 
+<!--    <ImageView-->
+<!--        android:id="@+id/image_logo"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/logo_teal"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:paddingVertical="8dp" />-->
+
     <!-- 앱 제목을 표시하는 TextView -->
     <TextView
         android:id="@+id/text_app_title"

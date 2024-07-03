@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:padding="8dp">
 
     <!-- RecyclerView to display images -->
     <androidx.recyclerview.widget.RecyclerView
@@ -13,77 +14,25 @@
         android:clipToPadding="false"
         android:scrollbars="vertical"/>
 
-    <!-- Floating action button for adding images -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!-- Add Image Button -->
+    <Button
         android:id="@+id/addImg"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_photo"
-        app:backgroundTint="@color/black"
-        app:tint="@android:color/white" />
+        android:background="@drawable/rounded_gray_background"
+        android:text="사진 추가하기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Select button -->
+    <!-- Toggle Button (Initially Select) -->
     <Button
-        android:id="@+id/selectButton"
+        android:id="@+id/selectDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:text="Select" />
+        android:text="사진 선택"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
 
-    <!-- Delete button -->
-    <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="16dp"
-        android:text="Delete" />
-
-</RelativeLayout>
-
-
-    <!--<?xml version="1.0" encoding="utf-8"?>-->
-
-    <!--    <RelativeLayout-->
-    <!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--        xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--        xmlns:tools="http://schemas.android.com/tools"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        tools:context="MainActivity">-->
-    <!--&lt;!&ndash;    image_item layout 생성하기&ndash;&gt;-->
-    <!--        -->
-    <!--        <LinearLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent">-->
-    <!--            <androidx.recyclerview.widget.RecyclerView-->
-    <!--                android:id="@+id/recyclerView"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="match_parent"/>-->
-    <!--           <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-    <!--               android:id="@+id/addImg"-->
-    <!--               android:src="@drawable/ic_add_photo"-->
-    <!--               app:tint="@color/white"-->
-    <!--               app:backgroundTint="#258FE3"-->
-    <!--               android:layout_alignParentBottom="true"-->
-    <!--               android:layout_alignParentEnd="true"-->
-    <!--               android:layout_margin="10dp"-->
-    <!--               android:layout_width="wrap_content"-->
-    <!--               android:layout_height="wrap_content"/>-->
-    <!--&lt;!&ndash;        icon 추가하기&ndash;&gt;-->
-
-
-
-
-    <!--</RelativeLayout>-->
-
-
-
-
-
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.example.myapplication.view.activity
 
-import Tab2Fragment
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +10,7 @@ import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.model.data.Address
 import com.example.myapplication.model.interfaces.SavePlaceListener
 import com.example.myapplication.view.fragment.Tab1Fragment
+import com.example.myapplication.view.fragment.Tab2Fragment
 import com.example.myapplication.view.fragment.Tab3Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
