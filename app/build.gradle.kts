@@ -32,7 +32,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "api_key", "${properties["api_key"]}")
-
+        buildConfigField("String", "kakao_native_key", "${properties["kakao_native_key"]}")
+        buildConfigField("String", "kakao_rest_key", "${properties["kakao_rest_key"]}")
     }
 
     buildTypes {
@@ -66,6 +67,9 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.18.0")
     implementation("com.android.support:animated-vector-drawable:28.0.0")
     implementation("com.android.support:support-media-compat:28.0.0")
+
+    // 카카오 지도 SDK
+    implementation("com.kakao.maps.open:android:2.9.5")
 
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.viewpager2:viewpager2:1.0.0")

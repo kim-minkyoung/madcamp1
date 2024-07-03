@@ -225,10 +225,9 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         if (dialogShown) return
         dialogShown = true
 
-        val message = "이 ${if (address.specificAddress != null) "상호명" else "도로명"}을 추가하시겠습니까?\n${address.specificAddress ?: address.roadAddress}"
+        val message = "이곳을 나만의 장소로 추가하시겠어요?\n${address.specificAddress ?: address.roadAddress}"
 
         AlertDialog.Builder(requireContext())
-            .setTitle("장소 추가")
             .setMessage(message)
             .setPositiveButton("네") { _, _ ->
                 updateBottomSheet(address)
