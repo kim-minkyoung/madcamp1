@@ -14,7 +14,7 @@ import com.example.myapplication.R
 
 class SplashActivity : AppCompatActivity() {
 
-    private val SPLASH_DELAY: Long = 2000 // 스플래시 화면 지연 시간 (ms)
+    private val SPLASH_DELAY: Long = 1000 // 스플래시 화면 지연 시간 (ms)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

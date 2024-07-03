@@ -33,10 +33,7 @@ class ContactAllActivity : AppCompatActivity() {
 
         // RecyclerView 설정
         binding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ContactAdapter(this, contacts, null, null, false) { contact ->
-            val intent = Intent(this, ContactDetailActivity::class.java)
-            startActivity(intent)
-        }
+        adapter = ContactAdapter(this, contacts, null, null, false)
         binding.contactRecyclerView.adapter = adapter
 
         // 검색 기능 설정

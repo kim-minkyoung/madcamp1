@@ -27,11 +27,7 @@ class ContactAdapter(
     private var contactList: List<Contact>,
     private val lifecycleOwner: LifecycleOwner?,
     private val contactViewModel: ContactViewModel?,
-    private val isTab1Fragment: Boolean,
-    private val onItemClick: (Contact) -> Unit = { contact ->
-        val intent = Intent(context, ContactDetailActivity::class.java)
-        context.startActivity(intent)
-    }
+    private val isTab1Fragment: Boolean
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     private var filteredContacts: List<Contact> = contactList
@@ -117,5 +113,11 @@ class ContactAdapter(
             matchesQuery && matchesFavorite == true
         }
         notifyDataSetChanged()
+    }
+
+    private val onItemClick: (Contact) -> Unit = { contact ->
+        val intent = Intent(context, ContactDetailActivity::class.java)
+        intent.putExtra("contact", contact)
+        context.startActivity(intent)
     }
 }
