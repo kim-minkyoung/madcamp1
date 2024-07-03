@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -50,6 +51,8 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteAdapter: ArrayAdapter<String>
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private lateinit var addressAdapter: AddressAdapter
+    private lateinit var bottomSheetSearchTextView: AutoCompleteTextView
+    private lateinit var bottomSheetSearchButton: Button
     val marker = Marker()
 
     private val viewModel: MapViewModel by viewModels()
@@ -62,6 +65,32 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    private fun searchAddressInBottomSheet(query: String) {
+        val addressList = addressAdapter.currentList
+        val position = addressList.indexOfFirst {
+            (it.roadAddress?.contains(query, ignoreCase = true) == true) ||
+                    (it.specificAddress?.contains(query, ignoreCase = true) == true)
+        }
+
+        if (position != -1) {
+            binding.addressRecyclerView.scrollToPosition(position)
+        } else {
+            Toast.makeText(requireContext(), "해당 주소를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+        naverMap.setOnMapClickListener { _, coord ->
+            marker.position = LatLng(coord.latitude, coord.longitude)
+            marker.map = naverMap
+            viewModel.reverseGeocode(coord.latitude, coord.longitude)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -69,23 +98,18 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ))
-
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         mapView = binding.mapView
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
-
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
-
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), "YOUR_GOOGLE_API_KEY")
         }
         placesClient = Places.createClient(requireContext())
-
         autoCompleteTextView = binding.address as AutoCompleteTextView
         autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
-        autoCompleteTextView.setAdapter(autoCompleteAdapter)
 
         autoCompleteTextView.setOnKeyListener { _, _, _ ->
             val query = autoCompleteTextView.text.toString()
@@ -94,11 +118,20 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             }
             false
         }
-
         binding.submit.setOnClickListener {
             val address = binding.address.text.toString()
             if (address.isNotEmpty()) {
                 viewModel.searchPlaceByName(address)
+            } else {
+                Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            }
+        }
+        bottomSheetSearchTextView = binding.bottomSheetAddress
+        bottomSheetSearchButton = binding.bottomSheetSearch
+        bottomSheetSearchButton.setOnClickListener {
+            val query = bottomSheetSearchTextView.text.toString()
+            if (query.isNotEmpty()) {
+                searchAddressInBottomSheet(query)
             } else {
                 Toast.makeText(requireContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
@@ -129,9 +162,9 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
 
         // RecyclerView 초기화
         binding.addressRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        addressAdapter = AddressAdapter(requireContext(), mutableListOf(), _binding!!.emptyStateText, viewModel)
+        addressAdapter = AddressAdapter(requireContext(), mutableListOf(), binding.emptyStateText, viewModel)
         binding.addressRecyclerView.adapter = addressAdapter
-
+        autoCompleteTextView.setAdapter(autoCompleteAdapter)
         // Observe navigateToAddress LiveData to move the map
         viewModel.navigateToAddress.observe(viewLifecycleOwner) { coordinates ->
             coordinates?.let { (latitude, longitude) ->
@@ -164,13 +197,13 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted
+                // 정밀한 위치 접근 허용됨
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Approximate location access granted
+                // 대략적인 위치 접근 허용됨
             }
             else -> {
-                // No location access granted
+                // 위치 접근이 허용되지 않음
                 Toast.makeText(requireContext(), "위치 권한을 허용해주세요.", Toast.LENGTH_SHORT).show()
                 requireActivity().finish()
             }
@@ -184,18 +217,6 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private fun moveCameraToLocation(latitude: Double, longitude: Double) {
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(latitude, longitude))
         naverMap.moveCamera(cameraUpdate)
-    }
-
-    override fun onMapReady(naverMap: NaverMap) {
-        this.naverMap = naverMap
-        naverMap.locationSource = locationSource
-        naverMap.locationTrackingMode = LocationTrackingMode.Follow
-
-        naverMap.setOnMapClickListener { _, coord ->
-            marker.position = LatLng(coord.latitude, coord.longitude)
-            marker.map = naverMap
-            viewModel.reverseGeocode(coord.latitude, coord.longitude)
-        }
     }
 
     private var dialogShown = false
@@ -222,7 +243,6 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
             }
             .show()
     }
-
 
     override fun onStart() {
         super.onStart()

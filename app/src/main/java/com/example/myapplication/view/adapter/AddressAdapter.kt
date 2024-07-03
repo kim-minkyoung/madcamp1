@@ -17,7 +17,8 @@ class AddressAdapter(
     private val emptyStateTextView: TextView,
     private val viewModel: MapViewModel
 ) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
-
+    val currentList: List<Address>
+        get() = addressList
     // SharedPreferences instance
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("address_prefs", Context.MODE_PRIVATE)
