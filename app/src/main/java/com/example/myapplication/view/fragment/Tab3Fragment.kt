@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -52,7 +53,7 @@ class Tab3Fragment : Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private lateinit var addressAdapter: AddressAdapter
     private lateinit var bottomSheetSearchTextView: AutoCompleteTextView
-    private lateinit var bottomSheetSearchButton: Button
+    private lateinit var bottomSheetSearchButton: TextView
     val marker = Marker()
 
     private val viewModel: MapViewModel by viewModels()

@@ -28,7 +28,7 @@
             android:src="@drawable/ic_delete"
             android:contentDescription="Delete"
             android:background="?attr/selectableItemBackground"
-            android:padding="8dp"/> <!-- Replace viewModel.onDeleteClicked with your method -->
+            android:paddingVertical="8dp"/> <!-- Replace viewModel.onDeleteClicked with your method -->
 
     </RelativeLayout>
 </layout>
