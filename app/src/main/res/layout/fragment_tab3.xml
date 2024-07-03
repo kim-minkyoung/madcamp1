@@ -50,12 +50,12 @@
         <LinearLayout
             android:id="@+id/persistent_bottom_sheet"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="280dp"
             android:background="#ebebeb"
             android:orientation="vertical"
             android:padding="16dp"
             app:behavior_hideable="false"
-            app:behavior_peekHeight="100dp"
+            app:behavior_peekHeight="80dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
             <!-- Custom Handle Layout -->
@@ -97,6 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:maxHeight="300dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
@@ -111,7 +112,7 @@
         </LinearLayout>
 
         <!-- Search Bar Layout -->
-        
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
